@@ -13,8 +13,12 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, \
-    RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
+    RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer, EarlyStoppingCallback
 from load_data import *
+
+
+# wandb description silent
+os.environ['WANDB_SILENT']="true"
 
 
 # 학습한 모델을 재생산하기 위해 seed를 고정
@@ -191,7 +195,7 @@ def train(train_df, valid_df, train_label, valid_label, args):
         model_config.num_labels = 18
 
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
-    print(model.config)
+    # print(model.config)
     # model.parameters
     model.to(device)
 
@@ -212,52 +216,37 @@ def train(train_df, valid_df, train_label, valid_label, args):
         logging_steps=args.logging_steps,  # log saving step.
         evaluation_strategy=args.evaluation_strategy,  # evaluation strategy to adopt during training
         eval_steps=args.eval_steps,  # evaluation step.
+        metric_for_best_model=args.metric_for_best_model,
         load_best_model_at_end=args.load_best_model_at_end,
+        report_to=args.report_to,  # 'all', 'wandb', 'tensorboard'
     )
     trainer = Trainer(
         model=model,  # the instantiated 🤗 Transformers model to be trained
         args=training_args,  # training arguments, defined above
         train_dataset=RE_train_dataset,  # training dataset
         eval_dataset=RE_valid_dataset,  # evaluation dataset
-        compute_metrics=compute_metrics  # define metrics function
+        compute_metrics=compute_metrics,  # define metrics function
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
     )
-
-    # wandb setting
-    wandb_config = wandb.config
-    wandb_config.seed = args.seed
-    wandb_config.epochs = args.epochs
-    wandb_config.batch_size = args.batch_size
-    wandb_config.model_name = args.model_name,
-
-    wandb.init(project=args.project_name,
-               name=args.run_name,
-               config=wandb_config,
-               )
 
     # train model
     trainer.train()
-    wandb.finish()
-    save_dir = increment_path(os.path.join('./best_model', args.model_name, args.run_name))
+    save_dir = increment_path(os.path.join('./best_model', args.model_name.split('/')[-1], args.run_name))
     model.save_pretrained(save_dir)
 
-    training_args = TrainingArguments(
-        do_predict=True
-    )
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        compute_metrics=compute_metrics,
-    )
-    trainer.predict(RE_valid_dataset)
+    eval_result = trainer.evaluate(RE_valid_dataset)
+
+    return eval_result
 
 
 def main(args):
     seed_everything(args.seed)
 
+    # 본인의 datafile 을 넣어주세요
     train_dataset = load_data("../dataset/train/modified_train.csv", args)
 
     # fold 별
-
+    fold_valid_f1_list = []
     skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
     # train_idx, valid_idx 뱉어준다.
     for fold, (train_idx, valid_idx) in enumerate(skf.split(train_dataset, train_dataset['label']), 1):
@@ -265,6 +254,19 @@ def main(args):
             if fold > 1:
                 break
         print(f'>> Cross Validation {fold} Starts!')
+
+        # wandb setting
+        wandb_config = wandb.config
+        wandb_config.seed = args.seed
+        wandb_config.epochs = args.epochs
+        wandb_config.batch_size = args.batch_size
+        wandb_config.model_name = args.model_name,
+
+        wandb.init(project=args.project_name,
+                   name=f'{args.run_name}_{fold}',
+                   config=wandb_config,
+                   )
+
         # load dataset
         train_df = train_dataset.iloc[train_idx]
         valid_df = train_dataset.iloc[valid_idx]
@@ -272,7 +274,14 @@ def main(args):
         train_label = label_to_num(train_df['label'].values, args)
         valid_label = label_to_num(valid_df['label'].values, args)
 
-        train(train_df, valid_df, train_label, valid_label, args)
+        result = train(train_df, valid_df, train_label, valid_label, args)
+
+        fold_valid_f1_list.append(result['eval_micro f1 score'])
+
+    print(f'cv_f1_score: {fold_valid_f1_list}')
+    print(f'cv_f1_score: {np.mean(fold_valid_f1_list)}')
+
+    wandb.finish()
 
 
 if __name__ == '__main__':
@@ -280,9 +289,9 @@ if __name__ == '__main__':
 
     # training arguments
     parser.add_argument('--seed', type=int, default=42, help='random seed (default: 42)')
-    parser.add_argument('--epochs', type=int, default=10, help='total number of training epochs (default: 10)')
-    parser.add_argument('--batch_size', type=int, default=40,
-                        help='batch size per device during training (default: 30)')
+    parser.add_argument('--epochs', type=int, default=20, help='total number of training epochs (default: 20)')
+    parser.add_argument('--batch_size', type=int, default=128,
+                        help='batch size per device during training (default: 1280)')
     parser.add_argument('--valid_batch_size', type=int, default=128,
                         help='batch size for evaluation (default: 128)')
     parser.add_argument('--model_name', type=str, default='klue/roberta-large',
@@ -297,11 +306,11 @@ if __name__ == '__main__':
     # training arguments that don't change well
     parser.add_argument('--output_dir', type=str, default='./results',
                         help='output directory (default: ./results)')
-    parser.add_argument('--save_total_limit', type=int, default=5, help='number of total save model (default: 5)')
-    parser.add_argument('--save_steps', type=int, default=500, help='model saving step')
+    parser.add_argument('--save_total_limit', type=int, default=1, help='number of total save model (default: 1)')
+    parser.add_argument('--save_steps', type=int, default=500, help='model saving step (default: 500)')
     parser.add_argument('--learning_rate', type=float, default=5e-5, help='learning_rate (default: 5e-5)')
-    parser.add_argument('--warmup_steps', type=int, default=500,
-                        help='number of warmup steps for learning rate scheduler (default: 500)')
+    parser.add_argument('--warmup_steps', type=int, default=200,
+                        help='number of warmup steps for learning rate scheduler (default: 200)')
     parser.add_argument('--weight_decay', type=float, default=0.01,
                         help='strength of weight decay (default: 0.01)')
     parser.add_argument('--logging_dir', type=str, default='./logs',
@@ -314,7 +323,10 @@ if __name__ == '__main__':
     # `steps`: Evaluate every `eval_steps`.
     # `epoch`: Evaluate every end of epoch.
     parser.add_argument('--eval_steps', type=int, default=500, help='evaluation step (default: 500)')
+    parser.add_argument('--metric_for_best_model', type=str, default='micro f1 score',
+                        help='metric_for_best_model (default: micro f1 score), log_loss')
     parser.add_argument('--load_best_model_at_end', type=bool, default=True, help='(default: True)')
+    parser.add_argument('--report_to', type=str, default='wandb', help='(default: wandb)')
     parser.add_argument('--project_name', type=str, default='p_stage_klue',
                         help='wandb project name (default: p_stage_klue')
     parser.add_argument('--k_folds', type=int, default=5, help='number of cross validation folds (default: 5)')
