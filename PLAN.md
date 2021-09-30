@@ -9,6 +9,7 @@
 ||Mutli Label Classification||
 ||K-Fold Validation Training||
 ||Fine-tuning like Pre-tranining|[오피스아워 정리 6번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
+||Hyperparameter Tuning||
 ||Hyperparameter Experiment|epoch, lr, batch_size, warmup_steps,||
 ||Loss Function Experiment||
 ||Making Classifier Deeper||
