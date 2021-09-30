@@ -290,8 +290,8 @@ if __name__ == '__main__':
     # training arguments
     parser.add_argument('--seed', type=int, default=42, help='random seed (default: 42)')
     parser.add_argument('--epochs', type=int, default=20, help='total number of training epochs (default: 20)')
-    parser.add_argument('--batch_size', type=int, default=128,
-                        help='batch size per device during training (default: 1280)')
+    parser.add_argument('--batch_size', type=int, default=40,
+                        help='batch size per device during training (default: 40)')
     parser.add_argument('--valid_batch_size', type=int, default=128,
                         help='batch size for evaluation (default: 128)')
     parser.add_argument('--model_name', type=str, default='klue/roberta-large',
