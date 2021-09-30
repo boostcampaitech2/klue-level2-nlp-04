@@ -281,7 +281,7 @@ if __name__ == '__main__':
     # training arguments
     parser.add_argument('--seed', type=int, default=42, help='random seed (default: 42)')
     parser.add_argument('--epochs', type=int, default=10, help='total number of training epochs (default: 10)')
-    parser.add_argument('--batch_size', type=int, default=30,
+    parser.add_argument('--batch_size', type=int, default=40,
                         help='batch size per device during training (default: 30)')
     parser.add_argument('--valid_batch_size', type=int, default=128,
                         help='batch size for evaluation (default: 128)')
