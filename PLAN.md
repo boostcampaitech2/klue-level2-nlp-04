@@ -3,7 +3,7 @@
 |번호|계획|세부 설명|진행도|
 |:---:|:------------:|:------------:|:------:|
 |1|[Baseline Code Completion](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/PLAN.md#1-baseline-code-completion)|Validation csv 추가, seed 설정|
-|2|Base Model Performance Evaluation|Ko-Robeta-Base 사용해서 베이스 성능 측정하기|
+|2|[Base Model Performance Evaluation](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/PLAN.md#2-base-model-performance-evaluation)|Ko-Robeta-Base 사용해서 베이스 성능 측정하기|
 ||||
 ||Mutli Label Classification||
 ||Cross Validation Training||
@@ -28,5 +28,9 @@
 ### ✋ [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/e4dfd1f6aea9b1263d8eeaad7d3bee1eef280a82/Baseline%20Code%20Completion.md)
 
 ## 2. Base Model Performance Evaluation
+### ✋ 진행 : 21년 09월 30일  
+### ✋ 내용
+* 
+### ✋ [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/683beb1ab9b5b337157cb1b61e54a71153e5a76c/Base%20Model%20Performance%20Evaluation.md)
 
 ## 3. 
