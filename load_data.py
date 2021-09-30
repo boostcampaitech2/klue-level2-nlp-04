@@ -2,6 +2,7 @@ import pickle as pickle
 import os
 import pandas as pd
 import torch
+from ast import literal_eval
 
 
 class RE_Dataset(torch.utils.data.Dataset):
@@ -20,25 +21,51 @@ class RE_Dataset(torch.utils.data.Dataset):
         return len(self.labels)
 
 
-def preprocessing_dataset(dataset):
+def preprocessing_dataset(dataset, args):
     """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
     subject_entity = []
     object_entity = []
     for i, j in zip(dataset['subject_entity'], dataset['object_entity']):
-        i = i[1:-1].split(',')[0].split(':')[1]
-        j = j[1:-1].split(',')[0].split(':')[1]
+        i = literal_eval(i)['word']
+        j = literal_eval(j)['word']
 
         subject_entity.append(i)
         object_entity.append(j)
-    out_dataset = pd.DataFrame({'id': dataset['id'], 'sentence': dataset['sentence'], 'subject_entity': subject_entity,
-                                'object_entity': object_entity, 'label': dataset['label'], })
+
+    if args.train_type == 'default':
+        out_dataset = pd.DataFrame({'id': dataset['id'],
+                                    'sentence': dataset['sentence'],
+                                    'subject_entity': subject_entity,
+                                    'object_entity': object_entity,
+                                    'label': dataset['label'], })
+    elif args.train_type == 'nop':
+        out_dataset = pd.DataFrame({'id': dataset['id'],
+                                    'sentence': dataset['sentence'],
+                                    'subject_entity': subject_entity,
+                                    'object_entity': object_entity,
+                                    'label': dataset['label1'], })
+    elif args.train_type in ['org', 'per']:
+        out_dataset = pd.DataFrame({'id': dataset['id'],
+                                    'sentence': dataset['sentence'],
+                                    'subject_entity': subject_entity,
+                                    'object_entity': object_entity,
+                                    'label': dataset['label2'], })
+    else:
+        raise Exception('default, nop, org, per 중의 train_type 을 넣어주세요!')
+
     return out_dataset
 
 
-def load_data(dataset_dir):
+def load_data(dataset_dir, args):
     """ csv 파일을 경로에 맡게 불러 옵니다. """
     pd_dataset = pd.read_csv(dataset_dir)
-    dataset = preprocessing_dataset(pd_dataset)
+    if args.train_type in ['default', 'nop']:
+        pass
+    elif args.train_type == 'org':
+        pd_dataset = pd_dataset[pd_dataset.label1 == args.train_type]
+    elif args.train_type == 'per':
+        pd_dataset = pd_dataset[pd_dataset.label1 == args.train_type]
+    dataset = preprocessing_dataset(pd_dataset, args)
 
     return dataset
 
