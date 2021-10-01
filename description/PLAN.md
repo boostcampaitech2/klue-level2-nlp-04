@@ -26,7 +26,7 @@
 * 지금까지의 모든 테크닉을 적용한 성능
 
 ## 0. EDA [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#%EB%AC%B8%EC%9E%A5-%EB%82%B4-%EA%B0%9C%EC%B2%B4%EA%B0%84-%EA%B4%80%EA%B3%84-%EC%B6%94%EC%B6%9C)
-#### 📌 진행 : 21년 09월 30일  
+#### 📌 진행 : 21년 09월 30일 ~ 10월 01일  
 #### 📖 내용
 * 대회 목적과 세부 데이터셋에 대해 소개한다.
 * 데이터셋 내부를 분석하고 표와 그래프를 통해 시각화한다.
@@ -34,7 +34,7 @@
 
 
 ## 1. Code Analysis [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#%EB%AC%B8%EC%9E%A5-%EB%82%B4-%EA%B0%9C%EC%B2%B4%EA%B0%84-%EA%B4%80%EA%B3%84-%EC%B6%94%EC%B6%9C)
-#### 📌 진행 : 21년 09월 30일  
+#### 📌 진행 : 21년 09월 30일 ~ 10월 01일  
 #### 📖 내용
 * 3개의 baseline code를 간단히 분석한다.
 * 1개의 필요에 의해 만든 code를 간단히 분석한다.
@@ -42,13 +42,13 @@
 #### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Code%20Analysis.md)
 
 ## 2. Baseline Code Completion [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#%EB%AC%B8%EC%9E%A5-%EB%82%B4-%EA%B0%9C%EC%B2%B4%EA%B0%84-%EA%B4%80%EA%B3%84-%EC%B6%94%EC%B6%9C)
-#### 📌 진행 : 21년 10월 01일  
+#### 📌 진행 : 21년 10월 01일 ~ 10월 02일  
 #### 📖 내용
 * 
 #### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/e4dfd1f6aea9b1263d8eeaad7d3bee1eef280a82/Baseline%20Code%20Completion.md)
 
 ## 3. Base Model Performance Evaluation [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#%EB%AC%B8%EC%9E%A5-%EB%82%B4-%EA%B0%9C%EC%B2%B4%EA%B0%84-%EA%B4%80%EA%B3%84-%EC%B6%94%EC%B6%9C)
-#### 📌 진행 : 21년 10월 01일  
+#### 📌 진행 : 21년 10월 01일 ~ 10월 02일  
 #### 📖 내용
 * 
 #### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Base%20Model%20Performance%20Evaluation.md)
