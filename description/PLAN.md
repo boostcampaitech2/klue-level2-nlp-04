@@ -3,10 +3,10 @@
 |번호|계획|세부 설명|진행도|
 |:---:|:------------:|:------------:|:------:|
 |0|[EDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#0-eda-)|Dataset 알아보기|`100%`|
-|1|[Code Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-code-analysis)|코드에 대한 자세한 설명||
-|2|[Baseline Code Completion](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-baseline-code-completion)|Validation csv 추가, seed 설정|거의 작성|
-|3|[Base Model Performance Evaluation](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-base-model-performance-evaluation)|Ko-Robeta-Base 사용해서 베이스 성능 측정하기|완료. 정리 작성하기|
-|4|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#4-model-comparison)|mBERT, KoBERT, GPTBERT, (추가적으로 PPT 확인하기)|현재 비교중 3개 모델 완료|
+|1|[Code Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-code-analysis-)|코드에 대한 자세한 설명||
+|2|[Baseline Code Completion](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-baseline-code-completion-)|Validation csv 추가, seed 설정|거의 작성|
+|3|[Base Model Performance Evaluation](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-base-model-performance-evaluation-)|Ko-Robeta-Base 사용해서 베이스 성능 측정하기|완료. 정리 작성하기|
+|4|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#4-model-comparison-)|mBERT, KoBERT, GPTBERT, (추가적으로 PPT 확인하기)|현재 비교중 3개 모델 완료|
 |5|Hyperparameter Tuning||
 |6|DATA Augmentation : KoEDA|https://github.com/toriving/KoEDA||
 |7|DATA Augmentation : Pororo|https://github.com/kakaobrain/pororo||
@@ -29,14 +29,14 @@
 #### 📌 진행 : 21년 09월 30일  
 #### 📖 내용
 * 
-#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/115056fb050979745bef3acfd53d645e28c3c2ff/EDA.md)
+#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/EDA.md)
 
 
 ## 1. Code Analysis [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-baseline-code-completion)
 #### 📌 진행 : 21년 09월 30일  
 #### 📖 내용
 * 
-#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/115056fb050979745bef3acfd53d645e28c3c2ff/Code%20Analysis.md)
+#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Code%20Analysis.md)
 
 ## 2. Baseline Code Completion [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-baseline-code-completion)
 #### 📌 진행 : 21년 10월 01일  
@@ -48,17 +48,17 @@
 #### 📌 진행 : 21년 10월 01일  
 #### 📖 내용
 * 
-#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/683beb1ab9b5b337157cb1b61e54a71153e5a76c/Base%20Model%20Performance%20Evaluation.md)
+#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Base%20Model%20Performance%20Evaluation.md)
 
 ## 4. Model Comparison [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-baseline-code-completion)
 #### 📌 진행 : 21년 10월 01일  
 #### 📖 내용
 * 
-#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/9ebe1645ad25562756e84115730ffc3121df9649/Model%20Comparison.md)
+#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Model%20Comparison.md)
 
 ## 5. Model Comparison [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-baseline-code-completion)
 #### 📌 진행 : 21년 10월 02일  
 #### 📖 내용
 * 
-#### 🚀 [세부 사항]()
+#### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Model%20Comparison.md)
 
