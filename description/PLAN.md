@@ -8,7 +8,7 @@
 |3|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-model-comparison-)|[KoElectra](https://github.com/monologg/KoELECTRA), [KLUE/RoBERTa](https://github.com/KLUE-benchmark/KLUE)||
 |4|[Hyperparameter Tuning](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#4-hyperparameter-tuning-)|https://medium.com/distributed-computing-with-ray/hyperparameter-optimization-for-transformers-a-guide-c4e32c6c989b|
 |5|[DATA Augmentation : KoEDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#5-data-augmentation--koeda-)|https://github.com/toriving/KoEDA||
-|6|[DATA Augmentation : Pororo](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#5-data-augmentation--pororo-) |https://github.com/kakaobrain/pororo||
+|6|[DATA Augmentation : Pororo](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#6-data-augmentation--pororo-) |https://github.com/kakaobrain/pororo||
 ||DATA Augmentation : KoBart|[KoBart](https://github.com/SKT-AI/KoBART)||
 ||DATA Augmentation : KoGPT2|[KoGPT2](https://github.com/gyunggyung/KoGPT2-FineTuning)||
 ||Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
