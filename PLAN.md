@@ -2,10 +2,11 @@
 
 |번호|계획|세부 설명|진행도|
 |:---:|:------------:|:------------:|:------:|
-|0|EDA|Dataset 알아보기||
-|1|Code Analysis|코드에 대한 자세한 설명||
+|0|[EDA]|Dataset 알아보기||
+|1|[Code Analysis]|코드에 대한 자세한 설명||
 |2|[Baseline Code Completion](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/PLAN.md#1-baseline-code-completion)|Validation csv 추가, seed 설정||
 |3|[Base Model Performance Evaluation](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/PLAN.md#2-base-model-performance-evaluation)|Ko-Robeta-Base 사용해서 베이스 성능 측정하기||
+|4|[Model Comparison]|mBERT, KoBERT, GPTBERT, (추가적으로 PPT 확인하기)||
 ||Mutli Label Classification||
 ||K-Fold Validation Training||
 ||Fine-tuning like Pre-tranining|[오피스아워 정리 6번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
@@ -15,7 +16,6 @@
 ||Making Classifier Deeper||
 ||Additional Pretraining on dataset by MASK token||
 ||Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
-||Model Variation|mBERT, KoBERT, GPTBERT, (추가적으로 PPT 확인하기)||
 ||DATA Augmentation : KoEDA|https://github.com/toriving/KoEDA||
 ||DATA Augmentation : Pororo|https://github.com/kakaobrain/pororo||
 ||||
