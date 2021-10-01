@@ -146,6 +146,8 @@ plt.show()
 ![image](https://user-images.githubusercontent.com/45033215/135596485-1e4428cb-2712-4f82-a227-1958fdad631d.png)
 * 데이터 불균형이 매우 심한 것을 알 수 있다.
 
+---
+
 각각의 sub label별로 확인해보자.
 ```py
 df['sub_label'] = df.label.apply(lambda x : 'org' if 'org' in x else 'per' if 'per' in x else 'no_relation')
@@ -160,6 +162,8 @@ plt.show()
 ![image](https://user-images.githubusercontent.com/45033215/135606613-57b930b2-74fa-4c1f-acf7-c47851e8b6d4.png)
 
 * 데이터의 비율이 균등하지는 않지만 sub label간 격차가 심하지 않음을 알 수 있다.
+
+---
 
 이번에는, Source에 따른 데이터를 확인해보자.
 ```py
