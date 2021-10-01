@@ -163,7 +163,6 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
 
     # wandb setting
     wandb_config = wandb.config
-    wandb_config.seed = seed
     wandb_config.epochs = epoch
     wandb_config.batch_size = train_bs
     wandb_config.model_name = model_name,
@@ -171,6 +170,7 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
     wandb.init(project=experiment_name,
                name=wandb_name,
                config=wandb_config,
+               reinit=True,
                )
 
     # train model
@@ -184,7 +184,11 @@ def main():
 
     # model_name, wandb_name = model_list[3]
     experiment_name = experiment_list[1]
-    for a, b in model_list.values():
+    # for idx, (a, b) in enumerate(model_list.values()):
+    # size = len()
+    for idx in [4, 1]:
+        print(list(model_list.values()))
+        a, b = list(model_list.values())[idx]
         model_name, wandb_name = a, b
 
         train(
@@ -195,8 +199,8 @@ def main():
             dev_dataset_path="../dataset/train/stratified_dev.csv",
             seed=42,
             epoch=10,
-            train_bs=40,
-            dev_bs=120,
+            train_bs=32,
+            dev_bs=128,
             lr=5e-5,
             warmup_steps=500,
             wandb_name=wandb_name,
