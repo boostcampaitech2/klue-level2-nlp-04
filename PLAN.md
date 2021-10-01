@@ -25,16 +25,32 @@
 * 해당 기능만을 추가했을 때의 성능
 * 지금까지의 모든 테크닉을 적용한 성능
 
+## 0. Baseline Code Completion
+### ✋ 진행 : 21년 09월 30일  
+### ✋ 내용
+* 
+### ✋ [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/115056fb050979745bef3acfd53d645e28c3c2ff/EDA.md)
+
 ## 1. Baseline Code Completion
 ### ✋ 진행 : 21년 09월 30일  
 ### ✋ 내용
 * 
+### ✋ [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/115056fb050979745bef3acfd53d645e28c3c2ff/Code%20Analysis.md)
+
+## 2. Baseline Code Completion
+### ✋ 진행 : 21년 10월 01일  
+### ✋ 내용
+* 
 ### ✋ [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/e4dfd1f6aea9b1263d8eeaad7d3bee1eef280a82/Baseline%20Code%20Completion.md)
 
-## 2. Base Model Performance Evaluation
-### ✋ 진행 : 21년 09월 30일  
+## 3. Base Model Performance Evaluation
+### ✋ 진행 : 21년 10월 01일  
 ### ✋ 내용
 * 
 ### ✋ [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/683beb1ab9b5b337157cb1b61e54a71153e5a76c/Base%20Model%20Performance%20Evaluation.md)
 
-## 3. 
+## 4.
+### ✋ 진행 : 21년 10월 일  
+### ✋ 내용
+* 
+### ✋ [세부 사항]()
