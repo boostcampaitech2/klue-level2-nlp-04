@@ -23,7 +23,7 @@
 　 　├── Data Loading    
 　 　└── Main  
 
-## train.py [⬆]
+## train.py [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Code%20Analysis.md#code-analysis)
 > Library import and os setting
 ```py
 import pickle as pickle
@@ -295,7 +295,7 @@ if __name__ == '__main__':
 * 이 dictionary는 get_experiment_dict()함수로 불러오며, 이 함수는 experiment_dict.py에 존재한다.
 
 
-## experiment_dict.py [⬆]
+## experiment_dict.py [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Code%20Analysis.md#code-analysis)
 > Experiment Dictionary
 
 ```py
@@ -318,7 +318,7 @@ def get_experiment_dict():
 * 현재는 model의 종류를 바꿔가면서 하는 실험만 했다. experiment_list에 있는 것보다 더 많은 부분을 실험할 예정이다.
 
 
-## load_data.py [⬆]
+## load_data.py [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Code%20Analysis.md#code-analysis)
 > Library import and os setting
 ```py
 import pickle as pickle
@@ -415,7 +415,7 @@ def tokenized_dataset(dataset, tokenizer):
 * 추후에 entity를 어떻게 tokenizing 할까에 대한 실험을 통해 이 부분을 자세히 설명한다.
 
 
-## inference.py [⬆]
+## inference.py [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Code%20Analysis.md#code-analysis)
 > Library import and os setting
 
 ```py
