@@ -1,13 +1,18 @@
 # Code Analysis
 ├── train.py  
-│   ├── library import and os setting  
-│   ├── best_model  
-│   ├── logs  
-│   ├── prediction  
-│   └── results  
+│　　├── library import and os setting  
+│　　├── Generating Validation Data  
+│　　├── F1 Score  
+│　　├── Auprc  
+│　　├── Computing Metrics  
+│　　├── Replacing category to number on label  
+│　　├── Train    
+│　　└── Main  
+├── experiment_dict.py  
+│　　└── Experiment Dictionary  
 ├── load_data.py  
-│     ├── test  
-│     └── train  
+│　　├── test  
+│　　└── train  
 │ 
 
 ## train.py [⬆]
@@ -168,7 +173,8 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
 ```
 * 모델 이름을 설정한다. 이 모델 이름으로 pre trained 모델과 tokenizer 모델을 결정하게된다.
 * `new_dev_dataset` 인자가 True라면 dev dataset을 생성한다. False라면 생성되어있다고 가정하고 진행한다.
-* 데이터셋을 불러와 라벨과 데이터로 분리하고 이 데이터를 토크나이징한다.
+* 데이터셋을 불러온다. 이 데이터는 학습을 위해 원하는 형태로 전처리되어 불러와진다.
+* 이 데이터셋을 라벨과 데이터로 분리하고 이 데이터를 토크나이징한다.
 * 이후, 토크나이징 된 데이터와 숫자화 된 라벨을 묶어 RE_Dataset으로 선언한다.
 
 ---
@@ -281,7 +287,7 @@ if __name__ == '__main__':
 * 이 dictionary는 get_experiment_dict()함수로 불러오며, 이 함수는 experiment_dict.py에 존재한다.
 
 
-## experiment_dict.py
+## experiment_dict.py [⬆]
 > Experiment Dictionary
 
 ```py
@@ -304,14 +310,251 @@ def get_experiment_dict():
 * 현재는 model의 종류를 바꿔가면서 하는 실험만 했다. experiment_list에 있는 것보다 더 많은 부분을 실험할 예정이다.
 
 
-## load_data.py
+## load_data.py [⬆]
 > Library import and os setting
-
 ```py
 import pickle as pickle
 import os
 import pandas as pd
 import torch
 ```
-## inference.py
+
+---
+
+> RE_Dataset
+```py
+class RE_Dataset(torch.utils.data.Dataset):
+    """ Dataset 구성을 위한 class."""
+    def __init__(self, pair_dataset, labels):
+        self.pair_dataset = pair_dataset
+        self.labels = labels
+
+    def __getitem__(self, idx):
+        item = {key: val[idx].clone().detach() for key, val in self.pair_dataset.items()}
+        item['labels'] = torch.tensor(self.labels[idx])
+        return item
+
+    def __len__(self):
+        return len(self.labels)
+```
+* RE Task에 사용할 Dataset을 구성한다.
+* 이 Dataset의 data는 토크나이징을 거친 후의 data이며, label은 수치화되었다.
+
+---
+
+> Preprocessing
+
+```py
+def preprocessing_dataset(dataset):
+    """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
+    subject_entity = []
+    object_entity = []
+    for i, j in zip(dataset['subject_entity'], dataset['object_entity']):
+        i = eval(i)['word']  # eval(): str -> dict
+        j = eval(j)['word']
+
+        subject_entity.append(i)
+        object_entity.append(j)
+    out_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'], 'subject_entity':subject_entity, 'object_entity':object_entity, 'label':dataset['label'],})
+    return out_dataset
+```
+* dataset은 id, sentence, subject_entity, object_entity, label, source의 6가지 컬럼으로 되어있다.
+* 이 때 subject_entity와 object_entity는 또 word, start_idx, end_idx, type의 4가지 key로 구성된 딕셔너리로 구성되어있다.
+* 이 중 entity에 해당하는 word를 불러와서 리스트에 넣고 그 외에 id, sentence, label과 함께 DataFrame 으로 생성한다.
+* 이는 학습을 위해 필요한 형태로 제작하는 과정이다.
+
+---
+
+> Data Loading
+
+```py
+def load_data(dataset_dir):
+    """ csv 파일을 경로에 맡게 불러 옵니다. """
+    pd_dataset = pd.read_csv(dataset_dir)
+    dataset = preprocessing_dataset(pd_dataset)
+
+    return dataset
+```
+* dataset_dir에는 csv 파일의 경로가 적혀있으며 이를 불러와 preporcessing 함수를 거친뒤 반환된다.
+* train과 dev를 위해 두번 사용된다.
+
+---
+
+> Data Tokeninzing
+
+```py
+def tokenized_dataset(dataset, tokenizer):
+    """ tokenizer에 따라 sentence를 tokenizing 합니다."""
+    concat_entity = []
+    for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
+        temp = e01 + '[SEP]' + e02
+        concat_entity.append(temp)
+    tokenized_sentences = tokenizer(
+        concat_entity,
+        list(dataset['sentence']),
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=256,
+        add_special_tokens=True,
+        return_token_type_ids=False,
+    )
+    return tokenized_sentences
+```
+* model_name을 가지고 불러온 pretrained tokenizer와 label과 분리된, 원하는 형태의 data를 받는다.
+* subject_entity와 object_entity를 [SEP] 토큰으로 분리해서 concat_entity에 추가한다.
+* 이후 sentence와 concat_entity를 tokenizer에 입력한다.
+* 추후에 entity를 어떻게 tokenizing 할까에 대한 실험을 통해 이 부분을 자세히 설명한다.
+
+
+## inference.py [⬆]
 > Library import and os setting
+
+```py
+from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments
+from torch.utils.data import DataLoader
+from load_data import *
+import pandas as pd
+import torch
+import torch.nn.functional as F
+
+import pickle as pickle
+import numpy as np
+import argparse
+from tqdm import tqdm
+from experiment_dict import get_experiment_dict
+```
+
+---
+
+> Inference
+
+```py
+def inference(model, tokenized_sent, device):
+    """
+      test dataset을 DataLoader로 만들어 준 후,
+      batch_size로 나눠 model이 예측 합니다.
+    """
+    dataloader = DataLoader(tokenized_sent, batch_size=512, shuffle=False)
+    model.eval()
+    output_pred = []
+    output_prob = []
+    for i, data in enumerate(tqdm(dataloader)):
+        with torch.no_grad():
+            outputs = model(
+                input_ids=data['input_ids'].to(device),
+                attention_mask=data['attention_mask'].to(device),
+                # token_type_ids=data['token_type_ids'].to(device)
+            )
+        logits = outputs[0]
+        prob = F.softmax(logits, dim=-1).detach().cpu().numpy()
+        logits = logits.detach().cpu().numpy()
+        result = np.argmax(logits, axis=-1)
+
+        output_pred.append(result)
+        output_prob.append(prob)
+
+    return np.concatenate(output_pred).tolist(), np.concatenate(output_prob, axis=0).tolist()
+```
+* tokenizing을 마친 sentence와 model을 입력받는다.
+* 이후 예측값과 실제값의 차이를 구하고 softmax와 argmax를 거쳐 값을 구한다.
+* 예측 라벨은 output_pred에, 각각의 softmax 확률은 output_prob에 추가한다.
+* 모든 test_data에 대한 예측이 끝나면 output_pred와 output_prob을 concat해서 반환한다.
+
+---
+
+> Replacing number to category on label 
+
+```py
+def num_to_label(label):
+    """
+      숫자로 되어 있던 class를 원본 문자열 라벨로 변환 합니다.
+    """
+    origin_label = []
+    with open('dict_num_to_label.pkl', 'rb') as f:
+        dict_num_to_label = pickle.load(f)
+    for v in label:
+        origin_label.append(dict_num_to_label[v])
+
+    return origin_label
+```
+* 예측으로 얻은 결과를 범주형 결과로 변환해야 한다.
+
+---
+
+> Data Loading
+
+```py
+def load_test_dataset(dataset_dir, tokenizer):
+    """
+      test dataset을 불러온 후,
+      tokenizing 합니다.
+    """
+    test_dataset = load_data(dataset_dir)
+    test_label = list(map(int, test_dataset['label'].values))
+    # tokenizing dataset
+    tokenized_test = tokenized_dataset(test_dataset, tokenizer)
+    return test_dataset['id'], tokenized_test, test_label
+```
+* train처럼 지정된 path에서 csv를 읽어 data를 불러온다.
+* train과 다른점은, 어떠한 형태로 변환 없이 바로 토크나이징한다는 점.
+* 이후 id와 토크나이징 sentence 그리고 label을 반환한다.
+
+---
+
+> Main
+
+```py
+def main(model_name, model_dir, prediction_dir):
+    """
+      주어진 dataset csv 파일과 같은 형태일 경우 inference 가능한 코드입니다.
+    """
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    # load tokenizer
+    Tokenizer_NAME = model_name
+    # Tokenizer_NAME = "xlm-roberta-large"
+    tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
+
+    ## load my model
+    MODEL_NAME = model_dir  # model dir.
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+    model.parameters
+    model.to(device)
+
+    ## load test datset
+    test_dataset_dir = "../dataset/test/test_data.csv"
+    test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer)
+    Re_test_dataset = RE_Dataset(test_dataset, test_label)
+
+    ## predict answer
+    pred_answer, output_prob = inference(model, Re_test_dataset, device)  # model에서 class 추론
+    pred_answer = num_to_label(pred_answer)  # 숫자로 된 class를 원래 문자열 라벨로 변환.
+
+    ## make csv file with predicted answer
+    #########################################################
+    # 아래 directory와 columns의 형태는 지켜주시기 바랍니다.
+    output = pd.DataFrame({'id': test_id, 'pred_label': pred_answer, 'probs': output_prob, })
+
+    output.to_csv(prediction_dir+'.csv',
+                  index=False)  # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
+    #### 필수!! ##############################################
+    print('---- Finish! ----')
+
+
+if __name__ == '__main__':
+    experiment_list, model_list = get_experiment_dict()
+
+    model_name, wandb_name = model_list[0]
+    experiment_name = experiment_list[1]
+
+    main(model_name=model_name,
+         model_dir=os.path.join('./best_model/', experiment_name, wandb_name),
+         prediction_dir=os.path.join('./prediction/', experiment_name, wandb_name),
+         )
+```
+* test data에 대한 inference를 하기위해 모델을 불러온다.
+* 이 때 모델은 experiment_dict.py의 get_experiment_dict()를 통해 가져온다.
+* test_data.csv를 불러와 tokenizing하고 RE dataset으로 선언한다.
+* 실제 inference를 통해 예측 결과와, 30개의 label에 대한 확률을 얻는다.
+* 얻은 예측 결과를 범주형 데이터로 변환한다.
+* 이 결과를 csv파일로 생성해 저장한다.
