@@ -1,15 +1,16 @@
 # 문장 내 개체간 관계 추출
 
-|번호|계획|세부 설명|진행도|
+|번호|계획|관련 자료|진행도|
 |:---:|:------------:|:------------:|:------:|
 |0|[EDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#0-eda-)|Dataset 알아보기|`100%`|
 |1|[Code Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-code-analysis-)|코드에 대한 자세한 설명|`100%`|
-|2|[Base Model Performance Evaluation](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-base-model-performance-evaluation-)|Ko-Robeta-Base 사용해서 베이스 성능 측정하기|완료. 정리 작성하기|
-|3|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-model-comparison-)|mBERT, KoBERT, GPTBERT, (추가적으로 PPT 확인하기)|현재 비교중 3개 모델 완료|
-||Hyperparameter Tuning||
+|2|[Base Model Performance Evaluation](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-base-model-performance-evaluation-)|Ko-Robeta-Base 사용해서 베이스 성능 측정하기||
+|3|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-model-comparison-)|[KoElectra](https://github.com/monologg/KoELECTRA), [KLUE/RoBERTa](https://github.com/KLUE-benchmark/KLUE)||
+||Hyperparameter Tuning|https://medium.com/distributed-computing-with-ray/hyperparameter-optimization-for-transformers-a-guide-c4e32c6c989b|
 ||DATA Augmentation : KoEDA|https://github.com/toriving/KoEDA||
 ||DATA Augmentation : Pororo|https://github.com/kakaobrain/pororo||
-||DATA Augmentation : GPT-2|https://github.com/SKT-AI/KoGPT2#model||
+||DATA Augmentation : KoBart|[KoBart](https://github.com/SKT-AI/KoBART)||
+||DATA Augmentation : KoGPT2|[KoGPT2](https://github.com/gyunggyung/KoGPT2-FineTuning)||
 ||Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
 ||Additional Pretraining on dataset by MASK token|https://dacon.io/competitions/official/235747/codeshare/3072||
 ||Fine-tuning like Pre-tranining|[오피스아워 정리 6번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770) / [HuggingFace-Bert](https://github.com/huggingface/transformers/blob/master/src/transformers/models/bert/modeling_bert.py)||
