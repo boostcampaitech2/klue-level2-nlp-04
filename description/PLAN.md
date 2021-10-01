@@ -3,7 +3,7 @@
 |번호|계획|세부 설명|진행도|
 |:---:|:------------:|:------------:|:------:|
 |0|[EDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#0-eda-)|Dataset 알아보기|`100%`|
-|1|[Code Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-code-analysis-)|코드에 대한 자세한 설명||
+|1|[Code Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-code-analysis-)|코드에 대한 자세한 설명|`100%`|
 |2|[Baseline Code Completion](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-baseline-code-completion-)|Validation csv 추가, seed 설정|거의 작성|
 |3|[Base Model Performance Evaluation](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-base-model-performance-evaluation-)|Ko-Robeta-Base 사용해서 베이스 성능 측정하기|완료. 정리 작성하기|
 |4|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#4-model-comparison-)|mBERT, KoBERT, GPTBERT, (추가적으로 PPT 확인하기)|현재 비교중 3개 모델 완료|
