@@ -11,7 +11,7 @@
 |6|DATA Augmentation : KoEDA|https://github.com/toriving/KoEDA||
 |7|DATA Augmentation : Pororo|https://github.com/kakaobrain/pororo||
 |8|Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
-|9|Additional Pretraining on dataset by MASK token||
+|9|Additional Pretraining on dataset by MASK token|https://dacon.io/competitions/official/235747/codeshare/3072||
 |10|Fine-tuning like Pre-tranining|[오피스아워 정리 6번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
 ||Making Classifier Deeper||
 ||Mutli Label Classification||
