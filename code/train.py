@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 import numpy as np
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
+from transformers import EarlyStoppingCallback
 from load_data import *
 from experiment_dict import get_experiment_dict
 
@@ -20,8 +21,8 @@ def generate_dev(seed):
         train_df, dev_df = train_test_split(df, test_size=0.2,
                                             stratify=df.label,
                                             random_state=seed,)
-        train_df.to_csv("../dataset/train/stratified_train.csv")
-        dev_df.to_csv("../dataset/train/stratified_dev.csv")
+        train_df.to_csv("../dataset/train/stratified_train.csv", index=None)
+        dev_df.to_csv("../dataset/train/stratified_dev.csv", index=None)
 
     except Exception as e:
         return False, e
@@ -91,6 +92,9 @@ def label_to_num(label):
 def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_dataset_path,
           seed, epoch, train_bs, dev_bs, lr, warmup_steps, wandb_name):
 
+    print(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_dataset_path,
+          seed, epoch, train_bs, dev_bs, lr, warmup_steps, wandb_name)
+
     # load model and tokenizer
     # MODEL_NAME = "bert-base-uncased"
     MODEL_NAME = model_name
@@ -132,8 +136,8 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
     # 사용한 option 외에도 다양한 option들이 있습니다.
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
     training_args = TrainingArguments(
-        output_dir=os.path.join('./results/', wandb_name),       # output directory
-        save_total_limit=5,              # number of total save model.
+        output_dir=os.path.join('./results/', experiment_name, wandb_name),       # output directory
+        save_total_limit=10,              # number of total save model.
         save_strategy="steps",          # save interval : "steps", "epoch", "no"
         save_steps=100,                 # model saving step.
         num_train_epochs=epoch,              # total number of training epochs
@@ -150,8 +154,10 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
         # `epoch`: Evaluate every end of epoch.
         eval_steps=100,            # evaluation step.
         load_best_model_at_end=True,
+        metric_for_best_model='micro f1 score',
         seed=seed,
         report_to="wandb",
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
     trainer = Trainer(
         model=model,                         # the instantiated 🤗 Transformers model to be trained
@@ -162,20 +168,24 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
     )
 
     # wandb setting
-    wandb_config = wandb.config
-    wandb_config.epochs = epoch
-    wandb_config.batch_size = train_bs
-    wandb_config.model_name = model_name,
+    configs = {
+        "@learning_rate": lr,
+        "@train_bs": train_bs,
+        "@dev_bs": dev_bs,
+        "@epoch": epoch,
+        "@model_name": model_name,
+        "@warmup_steps": warmup_steps,
+    }
 
     wandb.init(project=experiment_name,
                name=wandb_name,
-               config=wandb_config,
+               config=configs,
                reinit=True,
                )
 
     # train model
     trainer.train()
-    wandb.finish()
+    wandb.join()
     model.save_pretrained(os.path.join('./best_model/', experiment_name, wandb_name))
 
 
@@ -186,19 +196,27 @@ def main():
     experiment_name = experiment_list[1]
     # for idx, (a, b) in enumerate(model_list.values()):
     # size = len()
-    for idx in [4, 1]:
-        print(list(model_list.values()))
+
+    ### 🔥🔥🔥🔥🔥🔥🔥🔥
+    ### 실행전 반드시 아래를 확인할 것!
+    ### model_name
+    ### wandb_name
+    ### experiment_name
+    ### 🔥🔥🔥🔥🔥🔥🔥
+    for idx in range(1):
+        if idx == 1 or idx == 4:
+            continue
         a, b = list(model_list.values())[idx]
         model_name, wandb_name = a, b
 
         train(
             model_name=model_name,
             experiment_name=experiment_name,
-            new_dev_dataset=False,
+            new_dev_dataset=True,
             train_dataset_path="../dataset/train/stratified_train.csv",
             dev_dataset_path="../dataset/train/stratified_dev.csv",
             seed=42,
-            epoch=10,
+            epoch=4,
             train_bs=32,
             dev_bs=128,
             lr=5e-5,

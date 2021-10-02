@@ -57,13 +57,13 @@ def load_test_dataset(dataset_dir, tokenizer):
       tokenizing 합니다.
     """
     test_dataset = load_data(dataset_dir)
-    test_label = list(map(int, test_dataset['label'].values))
+    test_label = len(test_dataset)*[100]
     # tokenizing dataset
     tokenized_test = tokenized_dataset(test_dataset, tokenizer)
-    return test_dataset['id'], tokenized_test, test_label
+    return test_dataset['id'], tokenized_test, test_label, test_dataset
 
 
-def main(model_name, model_dir, prediction_dir):
+def main(model_name, model_dir, analysis_dir):
     """
       주어진 dataset csv 파일과 같은 형태일 경우 inference 가능한 코드입니다.
     """
@@ -76,12 +76,12 @@ def main(model_name, model_dir, prediction_dir):
     ## load my model
     MODEL_NAME = model_dir  # model dir.
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-    model.parameters
+    # model.parameters
     model.to(device)
 
     ## load test datset
-    test_dataset_dir = "../dataset/test/test_data.csv"
-    test_id, test_dataset, test_label = load_test_dataset(test_dataset_dir, tokenizer)
+    test_dataset_dir = "../dataset/train/stratified_dev.csv"
+    test_id, test_dataset, test_label, test_df = load_test_dataset(test_dataset_dir, tokenizer)
     Re_test_dataset = RE_Dataset(test_dataset, test_label)
 
     ## predict answer
@@ -91,23 +91,23 @@ def main(model_name, model_dir, prediction_dir):
     ## make csv file with predicted answer
     #########################################################
     # 아래 directory와 columns의 형태는 지켜주시기 바랍니다.
-    output = pd.DataFrame({'id': test_id, 'pred_label': pred_answer, 'probs': output_prob, })
 
-    output.to_csv(prediction_dir+'.csv',
-                  index=False)  # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
-    #### 필수!! ##############################################
+    output = pd.DataFrame({'id': test_id, 'pred_label': pred_answer, 'probs': output_prob, })
+    test_df = pd.merge(test_df, output, how='outer', on='id')
+
+    test_df.to_csv(analysis_dir+'.csv', index=False)  # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
     print('---- Finish! ----')
 
 
 if __name__ == '__main__':
     experiment_list, model_list = get_experiment_dict()
 
-    model_name, wandb_name = model_list[3]
-    experiment_name = experiment_list[1]
+    model_name, wandb_name = model_list[0]  # idx 0 is ("klue/roberta-base", "KLUE-RoBERTa-base")
+    experiment_name = experiment_list[2]  # idx 2 is "DataAug"
     # model_dir = os.path.join('./best_model/', experiment_name, wandb_name)
     checkpoint = 'checkpoint-8100'
     model_dir = os.path.join('./results', wandb_name, checkpoint)
-    prediction_dir = os.path.join('./prediction/', f'{experiment_name}:{wandb_name}:{checkpoint}')
+    analysis_dir = os.path.join('./analysis/', f'{experiment_name}:{wandb_name}:{checkpoint}')
 
     ### 🔥🔥🔥🔥🔥🔥🔥🔥
     ### 실행전 반드시 아래를 확인할 것!
@@ -117,5 +117,5 @@ if __name__ == '__main__':
     ### 🔥🔥🔥🔥🔥🔥🔥
     main(model_name=model_name,
          model_dir=model_dir,
-         prediction_dir=prediction_dir,
+         analysis_dir=analysis_dir,
          )
