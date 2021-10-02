@@ -21,7 +21,7 @@ class RE_Dataset(torch.utils.data.Dataset):
         return len(self.labels)
 
 
-def preprocessing_dataset(dataset, args):
+def preprocessing_dataset(dataset):
     """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
     subject_entity = []
     object_entity = []
@@ -32,26 +32,11 @@ def preprocessing_dataset(dataset, args):
         subject_entity.append(i)
         object_entity.append(j)
 
-    if args.train_type == 'default':
-        out_dataset = pd.DataFrame({'id': dataset['id'],
-                                    'sentence': dataset['sentence'],
-                                    'subject_entity': subject_entity,
-                                    'object_entity': object_entity,
-                                    'label': dataset['label'], })
-    elif args.train_type == 'nop':
-        out_dataset = pd.DataFrame({'id': dataset['id'],
-                                    'sentence': dataset['sentence'],
-                                    'subject_entity': subject_entity,
-                                    'object_entity': object_entity,
-                                    'label': dataset['label1'], })
-    elif args.train_type in ['org', 'per']:
-        out_dataset = pd.DataFrame({'id': dataset['id'],
-                                    'sentence': dataset['sentence'],
-                                    'subject_entity': subject_entity,
-                                    'object_entity': object_entity,
-                                    'label': dataset['label2'], })
-    else:
-        raise Exception('default, nop, org, per 중의 train_type 을 넣어주세요!')
+    out_dataset = pd.DataFrame({'id': dataset['id'],
+                                'sentence': dataset['sentence'],
+                                'subject_entity': subject_entity,
+                                'object_entity': object_entity,
+                                'label': dataset['label'], })
 
     return out_dataset
 
@@ -75,14 +60,10 @@ def preprocessing_test_dataset(dataset):
     return out_dataset
 
 
-def load_data(dataset_dir, args):
+def load_data(dataset_dir):
     """ csv 파일을 경로에 맡게 불러 옵니다. """
     pd_dataset = pd.read_csv(dataset_dir)
-    if args.train_type == 'org':
-        pd_dataset = pd_dataset[pd_dataset.label1 == args.train_type]
-    elif args.train_type == 'per':
-        pd_dataset = pd_dataset[pd_dataset.label1 == args.train_type]
-    dataset = preprocessing_dataset(pd_dataset, args)
+    dataset = preprocessing_dataset(pd_dataset)
 
     return dataset
 
@@ -103,7 +84,6 @@ def tokenized_dataset(dataset, tokenizer, args):
     concat_entity = []
     for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
         temp = f'{e01} 와 {e02} 의 관계는?'
-        # temp = e01 + '[SEP]' + e02
         concat_entity.append(temp)
     tokenized_sentences = tokenizer(
         concat_entity,

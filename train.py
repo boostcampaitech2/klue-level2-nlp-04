@@ -28,14 +28,7 @@ def train(train_df, valid_df, train_label, valid_label, args):
     print(device)
     # setting model hyperparameter
     model_config = AutoConfig.from_pretrained(MODEL_NAME)
-    if args.train_type == 'default':
-        model_config.num_labels = 30
-    elif args.train_type == 'nop':
-        model_config.num_labels = 3
-    elif args.train_type == 'org':
-        model_config.num_labels = 11
-    elif args.train_type == 'per':
-        model_config.num_labels = 18
+    model_config.num_labels = 30
 
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
     # print(model.config)
@@ -69,7 +62,7 @@ def train(train_df, valid_df, train_label, valid_label, args):
         train_dataset=RE_train_dataset,  # training dataset
         eval_dataset=RE_valid_dataset,  # evaluation dataset
         compute_metrics=compute_metrics,  # define metrics function
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=args.early_stopping_patience)]
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=args.early_stopping_patience)],
     )
 
     # train model
@@ -86,7 +79,7 @@ def main(args):
     seed_everything(args.seed)
 
     # 본인의 datafile 을 넣어주세요
-    train_dataset = load_data("../dataset/train/modified_train.csv", args)
+    train_dataset = load_data("../dataset/train/train.csv")
 
     # fold 별
     fold_valid_f1_list = []
@@ -106,8 +99,8 @@ def main(args):
         train_df = train_dataset.iloc[train_idx]
         valid_df = train_dataset.iloc[valid_idx]
 
-        train_label = label_to_num(train_df['label'].values, args)
-        valid_label = label_to_num(valid_df['label'].values, args)
+        train_label = label_to_num(train_df['label'].values)
+        valid_label = label_to_num(valid_df['label'].values)
 
         result = train(train_df, valid_df, train_label, valid_label, args)
 
@@ -124,7 +117,7 @@ if __name__ == '__main__':
 
     # training arguments
     parser.add_argument('--seed', type=int, default=42, help='random seed (default: 42)')
-    parser.add_argument('--epochs', type=int, default=20, help='total number of training epochs (default: 20)')
+    parser.add_argument('--epochs', type=int, default=10, help='total number of training epochs (default: 10)')
     parser.add_argument('--batch_size', type=int, default=35,
                         help='batch size per device during training (default: 35)')
     parser.add_argument('--valid_batch_size', type=int, default=128,
@@ -144,7 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('--save_total_limit', type=int, default=1, help='number of total save model (default: 1)')
     parser.add_argument('--save_steps', type=int, default=200, help='model saving step (default: 200)')
     parser.add_argument('--learning_rate', type=float, default=5e-5, help='learning_rate (default: 5e-5)')
-    parser.add_argument('--warmup_steps', type=int, default=800,
+    parser.add_argument('--warmup_steps', type=int, default=1000,
                         help='number of warmup steps for learning rate scheduler (default: 300)')
     parser.add_argument('--weight_decay', type=float, default=0.01,
                         help='strength of weight decay (default: 0.01)')
@@ -165,8 +158,8 @@ if __name__ == '__main__':
     parser.add_argument('--project_name', type=str, default='p_stage_klue',
                         help='wandb project name (default: p_stage_klue')
     parser.add_argument('--k_folds', type=int, default=5, help='number of cross validation folds (default: 5)')
-    parser.add_argument('--early_stopping_patience', type=int, default=10,
-                        help='number of early_stopping_patience (default: 10)')
+    parser.add_argument('--early_stopping_patience', type=int, default=7,
+                        help='number of early_stopping_patience (default: 7)')
 
     args = parser.parse_args()
     print(args)

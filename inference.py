@@ -54,80 +54,34 @@ def main(args):
     test_id, test_dataset, test_label = load_test_dataset(test_dataset, tokenizer, args)
     Re_test_dataset = RE_Dataset(test_dataset, test_label)
 
-    if args.inference_type in ['default', 'cv']:
-        ## load my model
-        # args.run_name 으로 시작하는 model_folder 다 가져오기
-        model_list = sorted(glob(os.path.join(args.model_dir, args.model_name.split('/')[-1], args.run_name[0] + '*')))
-        output_probs = np.zeros((test_df.shape[0], 30))
-        for model_name in model_list:
-            MODEL_NAME = model_name
-            model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-
-            # model.parameters
-            model.to(device)
-
-            ## predict answer
-            pred_answer, output_prob = inference(model, Re_test_dataset, device, args)  # model에서 class 추론
-            pred_answer = num_to_label(pred_answer)  # 숫자로 된 class를 원래 문자열 라벨로 변환.
-
-            output_probs += np.array(output_prob)
-
-        output_prob = output_probs / len(model_list)
-        output_prob = output_prob.tolist()
-        pred_answer = np.argmax(output_probs, axis=-1).tolist()
-        pred_answer = num_to_label(pred_answer)
-        ## make csv file with predicted answer
-        #########################################################
-        # 아래 directory와 columns의 형태는 지켜주시기 바랍니다.
-        output = pd.DataFrame({'id': test_id, 'pred_label': pred_answer, 'probs': output_prob, })
-    elif args.inference_type == 'hierarchical':
-        ## load my model
-        nop_model_dir = os.path.join(args.model_dir, args.model_name.split('/')[-1], 'nop')
-        org_model_dir = os.path.join(args.model_dir, args.model_name.split('/')[-1], 'org')
-        per_model_dir = os.path.join(args.model_dir, args.model_name.split('/')[-1], 'per')
-
-        nop_model = AutoModelForSequenceClassification.from_pretrained(nop_model_dir).to(device)
-        org_model = AutoModelForSequenceClassification.from_pretrained(org_model_dir).to(device)
-        per_model = AutoModelForSequenceClassification.from_pretrained(per_model_dir).to(device)
-
-        # nop_model 을 사용해 no_relation vs org vs per class 추론
-        print('nop predict')
-        pred_answer, output_prob = inference(nop_model, Re_test_dataset, device, args)
-        pred_answer = num_to_label(pred_answer, 'nop')  # 숫자로 된 class를 원래 문자열 라벨로 변환.
-        test_df['nop_label'] = pred_answer
-        test_df['pred_label'] = pred_answer
-        test_df['probs'] = torch.softmax(torch.from_numpy(np.random.rand(test_df.shape[0], 30)),
-                                         axis=-1).numpy().tolist()
-
-        # nop_model 에서 org(1) 로 분류된 애들가지고
-        org_test_df = test_df[test_df.nop_label == 'org']
-        test_dataset = preprocessing_test_dataset(org_test_df)
-        test_id, test_dataset, test_label = load_test_dataset(test_dataset, tokenizer, args)
-        Re_test_dataset = RE_Dataset(test_dataset, test_label)
-
-        # org_model 을 사용해 org 세부 class 추론
-        print('org predict')
-        pred_answer, org_output_prob = inference(org_model, Re_test_dataset, device, args)
-        pred_answer = num_to_label(pred_answer, 'org')  # 숫자로 된 class를 원래 문자열 라벨로 변환.
-        test_df.loc[test_df.nop_label == 'org', 'pred_label'] = pred_answer
-        # test_df.loc[test_df.nop_label == 'org', 'probs'] = output_prob
-
-        # nop_model 에서 per(2) 로 분류된 애들가지고
-        per_test_df = test_df[test_df.nop_label == 'per']
-        test_dataset = preprocessing_test_dataset(per_test_df)
-        test_id, test_dataset, test_label = load_test_dataset(test_dataset, tokenizer, args)
-        Re_test_dataset = RE_Dataset(test_dataset, test_label)
-
-        # per_model 을 사용해 per 세부 class 추론
-        print('per predict')
-        pred_answer, per_output_prob = inference(per_model, Re_test_dataset, device, args)
-        pred_answer = num_to_label(pred_answer, 'per')  # 숫자로 된 class를 원래 문자열 라벨로 변환.
-        test_df.loc[test_df.nop_label == 'per', 'pred_label'] = pred_answer
-        # test_df.loc[test_df.nop_label == 'per', 'probs'] = output_prob
-
-        output = test_df[['id', 'pred_label', 'probs']]
+    ## load my model
+    # args.run_name 으로 시작하는 model_folder 다 가져오기
+    if args.inference_type == 'cv':
+        model_list = glob(os.path.join(args.model_dir, args.model_name.split('/')[-1], args.run_name[0] + '*'))
+        model_list = sorted(model_list)
     else:
-        raise ValueError('inference_type 을 default or cv or hierarchical 로 적어주세요.')
+        model_list = glob(os.path.join(args.model_dir, args.model_name.split('/')[-1], args.run_name[0]))
+    output_probs = np.zeros((test_df.shape[0], 30))
+    for model_name in model_list:
+        MODEL_NAME = model_name
+        model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+
+        # model.parameters
+        model.to(device)
+
+        ## predict answer
+        pred_answer, output_prob = inference(model, Re_test_dataset, device, args)  # model에서 class 추론
+
+        output_probs += np.array(output_prob)
+
+    output_prob = output_probs / len(model_list)
+    output_prob = output_prob.tolist()
+    pred_answer = np.argmax(output_probs, axis=-1).tolist()
+    pred_answer = num_to_label(pred_answer)  # 숫자로 된 class를 원래 문자열 라벨로 변환.
+    ## make csv file with predicted answer
+    #########################################################
+    # 아래 directory와 columns의 형태는 지켜주시기 바랍니다.
+    output = pd.DataFrame({'id': test_id, 'pred_label': pred_answer, 'probs': output_prob, })
 
     output_dir = os.path.join(args.output_dir, args.inference_type, args.model_name.split('/')[-1])
     os.makedirs(output_dir, exist_ok=True)
@@ -142,16 +96,12 @@ if __name__ == '__main__':
 
     # model dir
     parser.add_argument('--model_dir', type=str, default="./best_model")
-    parser.add_argument('--model_name', type=str, default='klue/roberta-large',
-                        help='what kinds of models (default: klue/roberta-large)')
+    parser.add_argument('--model_name', type=str, default='', help='what kinds of models')
     parser.add_argument('--inference_type', type=str, default="default",
                         help='default: (using 30 label) or '
-                             'cv: (exp_cv + exp_cv1 + exp_cv2 + exp_cv3 + exp_cv4) or '
-                             'hierarchical: (nop + org + per)')
+                             'cv: (exp_cv + exp_cv1 + exp_cv2 + exp_cv3 + exp_cv4) or ')
     parser.add_argument('--run_name', nargs='+', type=str, default=[],
-                        help='names of the W&B run '
-                             'inference_type default or cv: exp_cv or'
-                             'inference_type hierarchical: [nop org per]) 순서대로 적어주자.')
+                        help='names of the W&B run inference_type default or cv: exp_cv or')
     parser.add_argument('--output_dir', type=str, default="./prediction")
     parser.add_argument('--batch_size', type=int, default=512,
                         help='batch size per device during training (default: 512)')
@@ -159,8 +109,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     assert args.model_name, "사용할 model_name 을 적어주세요"
-    assert args.run_name, "inference_type=default 사용할 run_name 을 적어주세요" \
-                          "inference_type=hierarchical 사용할 run_name 을 nop org per 순으로 적어주세요"
+    assert args.run_name, "inference_type=default 사용할 run_name 을 적어주세요"
 
     print(args)
     main(args)
