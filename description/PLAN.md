@@ -5,9 +5,10 @@
 |0|[EDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#0-eda-)|Dataset 알아보기|`100%`|
 |1|[Code Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-code-analysis-)|코드에 대한 자세한 설명|`100%`|
 |2|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-model-comparison-)|[KoElectra](https://github.com/monologg/KoELECTRA), [KLUE/RoBERTa](https://github.com/KLUE-benchmark/KLUE)|`100%`|
-|3|[Hyperparameter Tuning](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-hyperparameter-tuning-)|https://medium.com/distributed-computing-with-ray/hyperparameter-optimization-for-transformers-a-guide-c4e32c6c989b|
+|3|[DATA Augmentation : Data Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-data-augmentation--data-analysis-)|||
 |4|[DATA Augmentation : KoEDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#4-data-augmentation--koeda-)|https://github.com/toriving/KoEDA||
 |5|[DATA Augmentation : Pororo](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#5-data-augmentation--pororo-) |https://github.com/kakaobrain/pororo||
+||Hyperparameter Tuning|https://medium.com/distributed-computing-with-ray/hyperparameter-optimization-for-transformers-a-guide-c4e32c6c989b|
 ||DATA Augmentation : KoBart|[KoBart](https://github.com/SKT-AI/KoBART)||
 ||DATA Augmentation : KoGPT2|[KoGPT2](https://github.com/gyunggyung/KoGPT2-FineTuning)||
 ||Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
@@ -18,7 +19,7 @@
 ||K-Fold Validation Training||
 ||Hyperparameter Experiment|epoch, lr, batch_size, warmup_steps,||
 ||Loss Function Experiment||
-||||
+|||||
 
 다음과 같은 요소를 반드시 포함하여 비교할 것
 * 베이스 모델 성능
@@ -48,7 +49,7 @@
 * 
 #### 🚀 [세부 사항](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/Model%20Comparison.md)
 
-## 3. Hyperparameter Tuning [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#%EB%AC%B8%EC%9E%A5-%EB%82%B4-%EA%B0%9C%EC%B2%B4%EA%B0%84-%EA%B4%80%EA%B3%84-%EC%B6%94%EC%B6%9C)
+## 3. DATA Augmentation : Data Analysis [⬆](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#%EB%AC%B8%EC%9E%A5-%EB%82%B4-%EA%B0%9C%EC%B2%B4%EA%B0%84-%EA%B4%80%EA%B3%84-%EC%B6%94%EC%B6%9C)
 #### 📌 진행 : 21년 10월 02일  
 #### 📖 내용
 * 
