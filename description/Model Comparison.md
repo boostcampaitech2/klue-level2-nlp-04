@@ -8,7 +8,7 @@
 * validation ratio : 0.2
 * split approach : stratified
 * seed : 42
-* 전체 epoch : 8100
+* 전체 epoch : 10
 * 한 epoch 당 step : 810
 * 각 모델 별 소요시간이 나타나 있다.
 
