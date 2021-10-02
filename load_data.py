@@ -56,12 +56,29 @@ def preprocessing_dataset(dataset, args):
     return out_dataset
 
 
+def preprocessing_test_dataset(dataset):
+    """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
+    subject_entity = []
+    object_entity = []
+    for i, j in zip(dataset['subject_entity'], dataset['object_entity']):
+        i = literal_eval(i)['word']
+        j = literal_eval(j)['word']
+
+        subject_entity.append(i)
+        object_entity.append(j)
+
+    out_dataset = pd.DataFrame({'id': dataset['id'],
+                                'sentence': dataset['sentence'],
+                                'subject_entity': subject_entity,
+                                'object_entity': object_entity,
+                                'label': dataset['label'], })
+    return out_dataset
+
+
 def load_data(dataset_dir, args):
     """ csv 파일을 경로에 맡게 불러 옵니다. """
     pd_dataset = pd.read_csv(dataset_dir)
-    if args.train_type in ['default', 'nop']:
-        pass
-    elif args.train_type == 'org':
+    if args.train_type == 'org':
         pd_dataset = pd_dataset[pd_dataset.label1 == args.train_type]
     elif args.train_type == 'per':
         pd_dataset = pd_dataset[pd_dataset.label1 == args.train_type]
@@ -70,12 +87,23 @@ def load_data(dataset_dir, args):
     return dataset
 
 
+def load_test_dataset(test_dataset, tokenizer, args):
+    """
+      test dataset을 불러온 후,
+      tokenizing 합니다.
+    """
+    test_label = list(map(int, test_dataset['label'].values))
+    # tokenizing dataset
+    tokenized_test = tokenized_dataset(test_dataset, tokenizer, args)
+    return test_dataset['id'], tokenized_test, test_label
+
+
 def tokenized_dataset(dataset, tokenizer, args):
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
     concat_entity = []
     for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
-        temp = ''
-        temp = e01 + '[SEP]' + e02
+        temp = f'{e01} 와 {e02} 의 관계는?'
+        # temp = e01 + '[SEP]' + e02
         concat_entity.append(temp)
     tokenized_sentences = tokenizer(
         concat_entity,
