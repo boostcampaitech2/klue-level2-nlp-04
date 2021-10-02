@@ -1,4 +1,11 @@
 # 1. 모델 개요
+KLUE 데이터 셋에 대한 여러 모델들의 성능은 다음과 같다. [(링크)](https://github.com/KLUE-benchmark/KLUE)
+![image](https://user-images.githubusercontent.com/45033215/135707111-5ecf4ae5-04c3-40c5-b385-ac9647d4f257.png)
+* 우리가 해결해야 할 RE Task 에서는 KLUE-RoBERTa-large 모델이 성능이 제일 높음을 알 수 있다
+
+<br>
+
+# 2. 학습 세팅
 ![image](https://user-images.githubusercontent.com/45033215/135703411-fe901bac-ed56-411f-932f-7ac89f4c3cd1.png)
 * 훈련 배치 사이즈 : 32
 * 검증 배치 사이즈 : 128
@@ -12,7 +19,9 @@
 * 한 epoch 당 step : 810
 * 각 모델 별 소요시간이 나타나 있다.
 
-# 2. 모델 성능
+<br>
+
+# 3. 모델 성능
 주된 지표 4가지의 그래프는 다음과 같다.
 ![image](https://user-images.githubusercontent.com/45033215/135703460-2bbee4b3-71ec-4b3f-84fb-72b5603472ea.png)
 * 대체적으로 DistillBERT가 성능이 안좋음을 알 수 있다.
@@ -60,7 +69,9 @@
 * mBERT는 모든 epoch동안 상위 3개의 모델과 지속적으로 1~2점의 차이를 가진다. multilingual model이지만 아무리 그래도 한국어 데이터셋으로만 pretrained 된 모델과의 성능 차이는 어쩔 수 없다는 결론.
 * XLM-RoBERTa-base와 DistilBERT-base는 시작부터 끝까지 7, 8등의 성적을 가진다. 아무래도 한국어 데이터셋으로 pretrained 되지 않아서 이러한 결과가 발생했을 가능성이 높다.
 
-# 리더보드 모델 제출 결과
+<br>
+
+# 4. 리더보드 모델 제출 결과
 다음과 같은 6개의 모델을 제출했다. 모델 선정 기준은 초반 epoch와 후반 epoch에서 각각 성능이 제일 좋았던(실제로 checkpoint로도 남아있었던) 체크포인트를 선택했다. 
 |모델 - checkpoint|F1 Score|Auprc|
 |:----------:|:---:|:---:|
