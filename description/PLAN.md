@@ -4,7 +4,7 @@
 |:---:|:------------:|:------------:|:------:|
 |0|[EDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#0-eda-)|Dataset 알아보기|`100%`|
 |1|[Code Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#1-code-analysis-)|코드에 대한 자세한 설명|`100%`|
-|2|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#23-model-comparison-)|[KoElectra](https://github.com/monologg/KoELECTRA), [KLUE/RoBERTa](https://github.com/KLUE-benchmark/KLUE)|`100%`|
+|2|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-model-comparison-)|[KoElectra](https://github.com/monologg/KoELECTRA), [KLUE/RoBERTa](https://github.com/KLUE-benchmark/KLUE)|`100%`|
 |3|[Hyperparameter Tuning](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-hyperparameter-tuning-)|https://medium.com/distributed-computing-with-ray/hyperparameter-optimization-for-transformers-a-guide-c4e32c6c989b|
 |4|[DATA Augmentation : KoEDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#4-data-augmentation--koeda-)|https://github.com/toriving/KoEDA||
 |5|[DATA Augmentation : Pororo](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#5-data-augmentation--pororo-) |https://github.com/kakaobrain/pororo||
