@@ -45,12 +45,12 @@ def kor_to_trans(text_data, trans_lang):
 
 
 # 번역된 문장을 다시 한국어로 back translation 합니다
-def trans_to_kor(transed_list, transed_lang):
+def trans_to_kor(text_data, transed_list, transed_lang):
     back_trans_list = []
     for i in tqdm(range(len(transed_list))): 
         try: 
             driver.get('https://papago.naver.com/?sk='+transed_lang+'&tk=ko&st='+transed_list[i])
-            time.sleep(3) 
+            time.sleep(2.5) 
             backtrans = driver.find_element_by_css_selector("div#txtTarget").text
 
 
@@ -58,10 +58,11 @@ def trans_to_kor(transed_list, transed_lang):
             try:
                 driver.get('https://papago.naver.com/?sk='+transed_lang+'&tk=ko') 
                 driver.find_element_by_css_selector("textarea#txtSource").send_keys(transed_list[i])
-                time.sleep(3) 
+                time.sleep(2.5) 
                 backtrans = driver.find_element_by_css_selector("div#txtTarget").text
             except:
-                backtrans = transed_list[i]
+                # 에러가 발생하면 원래 한국어 문장을 리턴합니다
+                backtrans = text_data[i]
 
         if "XKZ" not in backtrans:
             backtrans = "XKZ" + backtrans
@@ -71,7 +72,7 @@ def trans_to_kor(transed_list, transed_lang):
     return back_trans_list
 
 
-# 고유명사를 **와 @@로 대치합니다
+# 고유명사를 XKZ와 KVX로 대치합니다 (heuristic하게 설정했습니다)
 def proper_noun(df):
     for idx in range(len(df)):
 
@@ -90,7 +91,7 @@ def proper_noun(df):
         df.iloc[idx, 1] = df.iloc[idx, 1].replace(obj_word, "KVX")
 
 
-# **와 @@를 다시 원래 단어로 복원합니다
+# XKZ와 KVX를 다시 원래 단어로 복원합니다
 def recover_proper_noun(df):
     for idx in range(len(df)):
         sub_entity = eval(df.iloc[idx, 2])
@@ -117,7 +118,7 @@ df = pd.read_csv("C:\\Users\\User\\Desktop\\papago\\train.csv")
 # 특정 수 이하의 문장을 가지는 라벨을 augmentation하기 위해 선택합니다
 aug_label = []
 for label in df['label'].unique():
-    if (df['label'].value_counts() > 0)[label] == True and (df['label'].value_counts() <= 41)[label] == True:
+    if (df['label'].value_counts() > 400)[label] == True and (df['label'].value_counts() <= 450)[label] == True:
         aug_label.append(label)
 
 corpus = []
@@ -135,7 +136,7 @@ for la, lang in zip(['eng', 'jpn', 'ch'], ['en', 'ja&hn=0', 'zh-CN']):
     exec(f'df_{la} = corpus_df.copy()')
     transed_list.extend(kor_to_trans(corpus_df['sentence'].values, lang))
     print(f"{la}언어로 번역된 문장: {transed_list}")
-    backtransed_list.extend(trans_to_kor(transed_list, lang))
+    backtransed_list.extend(trans_to_kor(corpus_df['sentence'].values, transed_list, lang))
     exec(f'df_{la}["sentence"] = backtransed_list')
     print(f"{la}언어가 다시 한국어로 번역된 corpus: {backtransed_list}")
 
@@ -145,4 +146,4 @@ for df in [df_eng, df_jpn, df_ch]:
 
 df_integrated = pd.concat([df_eng, df_jpn, df_ch])
 
-df_integrated.to_csv("C:\\Users\\User\\Desktop\\papago\\backtranslated_corpus_0_40.csv")
+df_integrated.to_csv("C:\\Users\\User\\Desktop\\papago\\backtranslated_corpus_400_450.csv")
