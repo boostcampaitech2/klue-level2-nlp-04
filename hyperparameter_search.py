@@ -1,12 +1,12 @@
 import argparse
 import os
 
-import numpy as np
 import torch
-import wandb
 from sklearn.model_selection import StratifiedKFold
 from transformers import AutoModelForSequenceClassification, AutoConfig, AutoTokenizer, Trainer, TrainingArguments, \
     EarlyStoppingCallback
+from ray.tune.suggest.hyperopt import HyperOptSearch
+from ray.tune.schedulers import ASHAScheduler
 
 from load_data import load_data, tokenized_dataset, RE_Dataset
 from utils import label_to_num, seed_everything, increment_path, compute_metrics
@@ -33,14 +33,7 @@ def hp_search(train_df, valid_df, train_label, valid_label, args):
     print(device)
     # setting model hyperparameter
     model_config = AutoConfig.from_pretrained(MODEL_NAME)
-    if args.train_type == 'default':
-        model_config.num_labels = 30
-    elif args.train_type == 'nop':
-        model_config.num_labels = 3
-    elif args.train_type == 'org':
-        model_config.num_labels = 11
-    elif args.train_type == 'per':
-        model_config.num_labels = 18
+    model_config.num_labels = 30
 
     def model_init():
         return AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
@@ -75,17 +68,12 @@ def hp_search(train_df, valid_df, train_label, valid_label, args):
         callbacks=[EarlyStoppingCallback(early_stopping_patience=args.early_stopping_patience)]
     )
 
-    def optuna_hp_space(trial):
-        return {
-            'learning_rate': trial.suggest_float('learning_rate', 5e-6, 5e-4, log=True),
-            'seed': trial.suggest_categorical('seed', [42, 2021]),
-            'per_device_train_batch_size': trial.suggest_categorical('per_device_train_batch_size', [16, 32]),
-        }
-
     # train model
     trainer.hyperparameter_search(
         direction='maximize',
-        hp_space=optuna_hp_space,
+        backend='ray',
+        search_alg=HyperOptSearch(metric='objective', mode='max'),
+        scheduler=ASHAScheduler(metric='objective', mode='max'),
     )
 
 
@@ -93,9 +81,9 @@ def main(args):
     seed_everything(args.seed)
 
     # 본인의 datafile 을 넣어주세요
-    train_dataset = load_data("../dataset/train/aeda_train.csv", args)
+    train_dataset = load_data("../dataset/train/train.csv")
 
-    skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.seed)
     # train_idx, valid_idx 뱉어준다.
     for fold, (train_idx, valid_idx) in enumerate(skf.split(train_dataset, train_dataset['label']), 1):
         if not args.cv:
@@ -107,8 +95,8 @@ def main(args):
         train_df = train_dataset.iloc[train_idx]
         valid_df = train_dataset.iloc[valid_idx]
 
-        train_label = label_to_num(train_df['label'].values, args)
-        valid_label = label_to_num(valid_df['label'].values, args)
+        train_label = label_to_num(train_df['label'].values)
+        valid_label = label_to_num(valid_df['label'].values)
 
         hp_search(train_df, valid_df, train_label, valid_label, args)
 
@@ -127,10 +115,6 @@ if __name__ == '__main__':
                         help='what kinds of models (default: klue/roberta-large)')
     parser.add_argument('--run_name', type=str, default='exp', help='name of the W&B run (default: exp)')
     parser.add_argument('--cv', type=bool, default=False, help='using cross validation (default: False)')
-    parser.add_argument('--train_type', type=str, default='default',
-                        help='default: (using 30 label) or '
-                             'nop: (no_relation vs org vs per) or '
-                             'org: (org details) or per: (per details)')
 
     # training arguments that don't change well
     parser.add_argument('--output_dir', type=str, default='./results',
@@ -158,9 +142,8 @@ if __name__ == '__main__':
     parser.add_argument('--report_to', type=str, default='wandb', help='(default: wandb)')
     parser.add_argument('--project_name', type=str, default='p_stage_klue',
                         help='wandb project name (default: p_stage_klue')
-    parser.add_argument('--k_folds', type=int, default=5, help='number of cross validation folds (default: 5)')
-    parser.add_argument('--early_stopping_patience', type=int, default=7,
-                        help='number of early_stopping_patience (default: 7)')
+    parser.add_argument('--early_stopping_patience', type=int, default=3,
+                        help='number of early_stopping_patience (default: 3)')
 
     args = parser.parse_args()
     print(args)

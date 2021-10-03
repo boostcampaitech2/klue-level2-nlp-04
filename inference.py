@@ -1,6 +1,7 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig
 from torch.utils.data import DataLoader
 from load_data import *
+from models import CustomModel
 from utils import *
 import pandas as pd
 import torch
@@ -24,9 +25,9 @@ def inference(model, tokenized_sent, device, args):
         data = {k: v.to(device) for k, v in data.items() if k != 'labels'}
         with torch.no_grad():
             outputs = model(**data)
-            # input_ids=data['input_ids'].to(device),
-            # attention_mask=data['attention_mask'].to(device),
-            # token_type_ids=data['token_type_ids'].to(device)
+                # input_ids=data['input_ids'].to(device),
+                # attention_mask=data['attention_mask'].to(device),
+                # token_type_ids=data['token_type_ids'].to(device),
         logits = outputs[0]
         prob = F.softmax(logits, dim=-1).detach().cpu().numpy()
         logits = logits.detach().cpu().numpy()
@@ -46,12 +47,15 @@ def main(args):
     # load tokenizer
     Tokenizer_NAME = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
+    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>', '[PER]', '[ORG]']}
+    tokenizer.add_special_tokens(special_tokens_dict)
 
     ## load test datset
     test_dataset_dir = "../dataset/test/test_data.csv"
     test_df = pd.read_csv(test_dataset_dir)
-    test_dataset = preprocessing_test_dataset(test_df)
-    test_id, test_dataset, test_label = load_test_dataset(test_dataset, tokenizer, args)
+    test_id = test_df['id'].values.tolist()
+    test_dataset = preprocessing_dataset(test_df)
+    test_dataset, test_label = load_test_dataset(test_dataset, tokenizer, args)
     Re_test_dataset = RE_Dataset(test_dataset, test_label)
 
     ## load my model
@@ -64,7 +68,9 @@ def main(args):
     output_probs = np.zeros((test_df.shape[0], 30))
     for model_name in model_list:
         MODEL_NAME = model_name
-        model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+        model_config = AutoConfig.from_pretrained(MODEL_NAME)
+        model = CustomModel.from_pretrained(MODEL_NAME, model_name=MODEL_NAME)
+        # model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
         # model.parameters
         model.to(device)

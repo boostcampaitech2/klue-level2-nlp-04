@@ -5,6 +5,7 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassifi
     TrainingArguments, EarlyStoppingCallback
 from load_data import *
 from utils import *
+from models import CustomModel
 
 # wandb description silent
 os.environ['WANDB_SILENT'] = "true"
@@ -14,6 +15,8 @@ def train(train_df, valid_df, train_label, valid_label, args):
     # load model and tokenizer
     MODEL_NAME = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>', '[PER]', '[ORG]']}
+    tokenizer.add_special_tokens(special_tokens_dict)
 
     # tokenizing dataset
     tokenized_train = tokenized_dataset(train_df, tokenizer, args)
@@ -30,10 +33,12 @@ def train(train_df, valid_df, train_label, valid_label, args):
     model_config = AutoConfig.from_pretrained(MODEL_NAME)
     model_config.num_labels = 30
 
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
+    model = CustomModel(model_config, MODEL_NAME)
+    # model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
     # print(model.config)
     # model.parameters
     model.to(device)
+    model.model.resize_token_embeddings(len(tokenizer))
 
     # 사용한 option 외에도 다양한 option들이 있습니다.
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
@@ -83,17 +88,13 @@ def main(args):
 
     # fold 별
     fold_valid_f1_list = []
-    skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.seed)
     # train_idx, valid_idx 뱉어준다.
     for fold, (train_idx, valid_idx) in enumerate(skf.split(train_dataset, train_dataset['label']), 1):
         if not args.cv:
             if fold > 1:
                 break
         print(f'>> Cross Validation {fold} Starts!')
-
-        # wandb setting
-        wandb.init(project=args.project_name,
-                   name=f'{args.run_name}_{fold}')
 
         # load dataset
         train_df = train_dataset.iloc[train_idx]
@@ -102,10 +103,21 @@ def main(args):
         train_label = label_to_num(train_df['label'].values)
         valid_label = label_to_num(valid_df['label'].values)
 
+        # wandb setting
+        wandb_config = {
+            'epochs': args.epochs,
+            'batch_size': args.batch_size,
+            'model_name': args.model_name,
+        }
+
+        wandb.init(project=args.project_name,
+                   name=f'{args.run_name}_{fold}',
+                   config=wandb_config,
+                   reinit=True,
+                   )
+
         result = train(train_df, valid_df, train_label, valid_label, args)
-
-        wandb.finish()
-
+        wandb.join()
         fold_valid_f1_list.append(result['eval_micro f1 score'])
 
     print(f'cv_f1_score: {fold_valid_f1_list}')
@@ -126,10 +138,6 @@ if __name__ == '__main__':
                         help='what kinds of models (default: klue/roberta-large)')
     parser.add_argument('--run_name', type=str, default='exp', help='name of the W&B run (default: exp)')
     parser.add_argument('--cv', type=bool, default=False, help='using cross validation (default: False)')
-    parser.add_argument('--train_type', type=str, default='default',
-                        help='default: (using 30 label) or '
-                             'nop: (no_relation vs org vs per) or '
-                             'org: (org details) or per: (per details)')
 
     # training arguments that don't change well
     parser.add_argument('--output_dir', type=str, default='./results',
@@ -157,9 +165,8 @@ if __name__ == '__main__':
     parser.add_argument('--report_to', type=str, default='wandb', help='(default: wandb)')
     parser.add_argument('--project_name', type=str, default='p_stage_klue',
                         help='wandb project name (default: p_stage_klue')
-    parser.add_argument('--k_folds', type=int, default=5, help='number of cross validation folds (default: 5)')
-    parser.add_argument('--early_stopping_patience', type=int, default=7,
-                        help='number of early_stopping_patience (default: 7)')
+    parser.add_argument('--early_stopping_patience', type=int, default=3,
+                        help='number of early_stopping_patience (default: 3)')
 
     args = parser.parse_args()
     print(args)

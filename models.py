@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
-from transformers import AutoModel
+from transformers import AutoModel, BertPreTrainedModel
 
 
 class FCLayer(nn.Module):
-    def __init__(self, input_dim, output_dim, dropout_rate=0.0, use_activation=True):
+    def __init__(self, input_dim, output_dim, dropout_rate=0.3, use_activation=True):
         super(FCLayer, self).__init__()
         self.use_activation = use_activation
         self.dropout = nn.Dropout(dropout_rate)
@@ -18,18 +18,19 @@ class FCLayer(nn.Module):
         return self.linear(x)
 
 
-class CustomModel(nn.Module):
-    def __init__(self, config, args):
-        super().__init__()
+class CustomModel(BertPreTrainedModel):
+    def __init__(self, config, model_name):
+        super().__init__(config)
 
-        self.model = AutoModel.from_pretrained(args.model_name, config=config)
+        self.model = AutoModel.from_pretrained(model_name, config=config)
 
-        self.cls_fc_layer = FCLayer(config.hidden_size, config.hidden_size, config.dropout_rate)
-        self.entity_fc_layer = FCLayer(config.hidden_size, config.hidden_size, args.dropout_rate)
+        self.num_labels = config.num_labels
+
+        self.cls_fc_layer = FCLayer(config.hidden_size, config.hidden_size)
+        self.entity_fc_layer = FCLayer(config.hidden_size, config.hidden_size)
         self.label_classifier = FCLayer(
             config.hidden_size * 3,
             config.num_labels,
-            args.dropout_rate,
             use_activation=False,
         )
 
@@ -50,8 +51,8 @@ class CustomModel(nn.Module):
         avg_vector = sum_vector.float() / length_tensor.float()  # broadcasting
         return avg_vector
 
-    def forward(self, input_ids, attention_mask, token_type_ids, labels, e1_mask, e2_mask):
-        outputs = self.bert(
+    def forward(self, input_ids, attention_mask, token_type_ids=None, labels=None, e1_mask=None, e2_mask=None):
+        outputs = self.model(
             input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids
         )  # sequence_output, pooled_output, (hidden_states), (attentions)
         sequence_output = outputs[0]
@@ -71,5 +72,16 @@ class CustomModel(nn.Module):
         logits = self.label_classifier(concat_h)
 
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
+
+        # Softmax
+        if labels is not None:
+            if self.num_labels == 1:
+                loss_fct = nn.MSELoss()
+                loss = loss_fct(logits.view(-1), labels.view(-1))
+            else:
+                loss_fct = nn.CrossEntropyLoss()
+                loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
+
+            outputs = (loss,) + outputs
 
         return outputs  # (loss), logits, (hidden_states), (attentions)
