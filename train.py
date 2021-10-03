@@ -15,7 +15,8 @@ def train(train_df, valid_df, train_label, valid_label, args):
     # load model and tokenizer
     MODEL_NAME = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>', '[PER]', '[ORG]']}
+    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
+                                                         '<e3>', '</e3>', '<e4>', '</e4>']}
     tokenizer.add_special_tokens(special_tokens_dict)
 
     # tokenizing dataset
@@ -148,7 +149,7 @@ if __name__ == '__main__':
     parser.add_argument('--warmup_steps', type=int, default=1000,
                         help='number of warmup steps for learning rate scheduler (default: 300)')
     parser.add_argument('--weight_decay', type=float, default=0.01,
-                        help='strength of weight decay (default: 0.01)')
+                        help='strength of wight decay (default: 0.01)')
     parser.add_argument('--logging_dir', type=str, default='./logs',
                         help='directory for storing logs (default: ./logs)')
     parser.add_argument('--logging_steps', type=int, default=100,

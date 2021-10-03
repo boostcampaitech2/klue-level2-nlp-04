@@ -29,7 +29,7 @@ class CustomModel(BertPreTrainedModel):
         self.cls_fc_layer = FCLayer(config.hidden_size, config.hidden_size)
         self.entity_fc_layer = FCLayer(config.hidden_size, config.hidden_size)
         self.label_classifier = FCLayer(
-            config.hidden_size * 3,
+            config.hidden_size * 5,
             config.num_labels,
             use_activation=False,
         )
@@ -51,7 +51,8 @@ class CustomModel(BertPreTrainedModel):
         avg_vector = sum_vector.float() / length_tensor.float()  # broadcasting
         return avg_vector
 
-    def forward(self, input_ids, attention_mask, token_type_ids=None, labels=None, e1_mask=None, e2_mask=None):
+    def forward(self, input_ids, attention_mask, token_type_ids=None, labels=None,
+                e1_mask=None, e2_mask=None, e3_mask=None, e4_mask=None):
         outputs = self.model(
             input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids
         )  # sequence_output, pooled_output, (hidden_states), (attentions)
@@ -61,14 +62,18 @@ class CustomModel(BertPreTrainedModel):
         # Average
         e1_h = self.entity_average(sequence_output, e1_mask)
         e2_h = self.entity_average(sequence_output, e2_mask)
+        e3_h = self.entity_average(sequence_output, e3_mask)
+        e4_h = self.entity_average(sequence_output, e4_mask)
 
         # Dropout -> tanh -> fc_layer (Share FC layer for e1 and e2)
         pooled_output = self.cls_fc_layer(pooled_output)
         e1_h = self.entity_fc_layer(e1_h)
         e2_h = self.entity_fc_layer(e2_h)
+        e3_h = self.entity_fc_layer(e3_h)
+        e4_h = self.entity_fc_layer(e4_h)
 
         # Concat -> fc_layer
-        concat_h = torch.cat([pooled_output, e1_h, e2_h], dim=-1)
+        concat_h = torch.cat([pooled_output, e1_h, e2_h, e3_h, e4_h], dim=-1)
         logits = self.label_classifier(concat_h)
 
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here

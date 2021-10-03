@@ -31,18 +31,18 @@ def add_entity_token(row):
     new_sent = ''
     if se['start_idx'] < oe['start_idx']:
         new_sent += sent[:se['start_idx']]
-        new_sent += f'<e1> [{se["type"]}] '
+        new_sent += '<e1> <e3> person </e3> ' if se['type'] == 'PER' else '<e1> <e3> organization </e3> '
         new_sent += sent[se['start_idx']:se['end_idx'] + 1] + ' </e1> '
         new_sent += sent[se['end_idx'] + 1:oe['start_idx']]
-        new_sent += f'<e2> [{oe["type"]}] '
+        new_sent += '<e2> <e4> person </e4> ' if oe['type'] == 'PER' else '<e2> <e4> organization </e4> '
         new_sent += sent[oe['start_idx']:oe['end_idx'] + 1] + ' </e2> '
         new_sent += sent[oe['end_idx'] + 1:]
     else:
         new_sent += sent[:oe['start_idx']]
-        new_sent += f'<e2> [{oe["type"]}] '
+        new_sent += '<e2> <e4> person </e4> ' if oe['type'] == 'PER' else '<e2> <e4> organization </e4> '
         new_sent += sent[oe['start_idx']:oe['end_idx'] + 1] + ' </e2> '
         new_sent += sent[oe['end_idx'] + 1:se['start_idx']]
-        new_sent += f'<e1> [{se["type"]}] '
+        new_sent += '<e1> <e3> person </e3> ' if se['type'] == 'PER' else '<e1> <e3> organization </e3> '
         new_sent += sent[se['start_idx']:se['end_idx'] + 1] + ' </e1> '
         new_sent += sent[se['end_idx'] + 1:]
 
@@ -91,20 +91,32 @@ def tokenized_dataset(dataset, tokenizer, args):
         e12_p = tokenized_sent.index('</e1>')  # the end position of entity1
         e21_p = tokenized_sent.index('<e2>')  # the start position of entity2
         e22_p = tokenized_sent.index('</e2>')  # the end position of entity2
+        e31_p = tokenized_sent.index('<e3>')  # the start position of entity3
+        e32_p = tokenized_sent.index('</e3>')  # the end position of entity3
+        e41_p = tokenized_sent.index('<e4>')  # the start position of entity4
+        e42_p = tokenized_sent.index('</e4>')  # the end position of entity4
 
         # Replace the token
-        tokenized_sent[e11_p] = "$"
-        tokenized_sent[e12_p] = "$"
+        tokenized_sent[e11_p] = "@"
+        tokenized_sent[e12_p] = "@"
         tokenized_sent[e21_p] = "#"
         tokenized_sent[e22_p] = "#"
+        tokenized_sent[e31_p] = "*"
+        tokenized_sent[e32_p] = "*"
+        tokenized_sent[e41_p] = "∧"
+        tokenized_sent[e42_p] = "∧"
 
         # Add 1 because of the [CLS] token
         e11_p += 1
         e12_p += 1
         e21_p += 1
         e22_p += 1
+        e31_p += 1
+        e32_p += 1
+        e41_p += 1
+        e42_p += 1
 
-        e_p_list.append([e11_p, e12_p, e21_p, e22_p])
+        e_p_list.append([e11_p, e12_p, e21_p, e22_p, e31_p, e32_p, e41_p, e42_p])
 
     tokenized_sentences = tokenizer(
         list(dataset['sentence']),
@@ -120,14 +132,25 @@ def tokenized_dataset(dataset, tokenizer, args):
                for _ in range(tokenized_sentences['attention_mask'].shape[0])]
     e2_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
                for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+    e3_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+               for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+    e4_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+               for _ in range(tokenized_sentences['attention_mask'].shape[0])]
 
     for i, e_p in enumerate(tqdm(e_p_list)):
-        for j in range(e_p[0], e_p[1] + 1):
-            e1_mask[i][j] = 1
-        for j in range(e_p[2], e_p[3] + 1):
-            e2_mask[i][j] = 1
+        e1_mask[i][e_p[0]] = 1
+        e1_mask[i][e_p[1]] = 1
+        e2_mask[i][e_p[2]] = 1
+        e2_mask[i][e_p[3]] = 1
+        e3_mask[i][e_p[4]] = 1
+        e3_mask[i][e_p[5]] = 1
+        e4_mask[i][e_p[6]] = 1
+        e4_mask[i][e_p[7]] = 1
 
     tokenized_sentences['e1_mask'] = torch.tensor(e1_mask, dtype=torch.long)
     tokenized_sentences['e2_mask'] = torch.tensor(e2_mask, dtype=torch.long)
+    tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
+    tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
 
     return tokenized_sentences
+

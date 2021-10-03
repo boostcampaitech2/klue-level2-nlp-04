@@ -47,7 +47,8 @@ def main(args):
     # load tokenizer
     Tokenizer_NAME = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>', '[PER]', '[ORG]']}
+    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
+                                                         '<e3>', '</e3>', '<e4>', '</e4>']}
     tokenizer.add_special_tokens(special_tokens_dict)
 
     ## load test datset
@@ -68,7 +69,6 @@ def main(args):
     output_probs = np.zeros((test_df.shape[0], 30))
     for model_name in model_list:
         MODEL_NAME = model_name
-        model_config = AutoConfig.from_pretrained(MODEL_NAME)
         model = CustomModel.from_pretrained(MODEL_NAME, model_name=MODEL_NAME)
         # model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
@@ -119,3 +119,4 @@ if __name__ == '__main__':
 
     print(args)
     main(args)
+
