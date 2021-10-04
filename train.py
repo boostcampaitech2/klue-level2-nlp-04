@@ -98,8 +98,6 @@ def main(args):
         if not args.cv:
             if fold > 1:
                 break
-        if fold < 3:
-            continue
         print(f'>> Cross Validation {fold} Starts!')
 
         # load dataset
