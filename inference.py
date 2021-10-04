@@ -22,12 +22,16 @@ def inference(model, tokenized_sent, device, args):
     output_pred = []
     output_prob = []
     for i, data in enumerate(tqdm(dataloader)):
-        data = {k: v.to(device) for k, v in data.items() if k != 'labels'}
+        if 'roberta' in args.model_name:
+            data = {k: v.to(device) for k, v in data.items() if k not in ['labels', 'token_type_ids']}
+        else:
+            data = {k: v.to(device) for k, v in data.items() if k != 'labels'}
         with torch.no_grad():
             outputs = model(**data)
                 # input_ids=data['input_ids'].to(device),
                 # attention_mask=data['attention_mask'].to(device),
                 # token_type_ids=data['token_type_ids'].to(device),
+
         logits = outputs[0]
         prob = F.softmax(logits, dim=-1).detach().cpu().numpy()
         logits = logits.detach().cpu().numpy()
