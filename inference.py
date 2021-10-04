@@ -111,11 +111,13 @@ if __name__ == '__main__':
     parser.add_argument('--output_dir', type=str, default="./prediction")
     parser.add_argument('--batch_size', type=int, default=512,
                         help='batch size per device during training (default: 512)')
+    parser.add_argument('--tem', type=bool, default="", help='using typed entity marker (default: "")')
 
     args = parser.parse_args()
 
     assert args.model_name, "사용할 model_name 을 적어주세요"
     assert args.run_name, "inference_type=default 사용할 run_name 을 적어주세요"
+    assert args.tem, "typed entity marker 를 사용하신다면 True 아니라면 False 를 적어주세요"
 
     print(args)
     main(args)

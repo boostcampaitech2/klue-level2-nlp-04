@@ -81,7 +81,7 @@ def main(args):
     seed_everything(args.seed)
 
     # 본인의 datafile 을 넣어주세요
-    train_dataset = load_data("../dataset/train/train.csv")
+    train_dataset = load_data("../dataset/train/train.csv", args)
 
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.seed)
     # train_idx, valid_idx 뱉어준다.
@@ -115,6 +115,7 @@ if __name__ == '__main__':
                         help='what kinds of models (default: klue/roberta-large)')
     parser.add_argument('--run_name', type=str, default='exp', help='name of the W&B run (default: exp)')
     parser.add_argument('--cv', type=bool, default=False, help='using cross validation (default: False)')
+    parser.add_argument('--tem', type=bool, default=False, help='using typed entity marker (default: False)')
 
     # training arguments that don't change well
     parser.add_argument('--output_dir', type=str, default='./results',

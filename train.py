@@ -15,9 +15,10 @@ def train(train_df, valid_df, train_label, valid_label, args):
     # load model and tokenizer
     MODEL_NAME = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
-                                                         '<e3>', '</e3>', '<e4>', '</e4>']}
-    tokenizer.add_special_tokens(special_tokens_dict)
+    if args.tem:
+        special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
+                                                             '<e3>', '</e3>', '<e4>', '</e4>']}
+        tokenizer.add_special_tokens(special_tokens_dict)
 
     # tokenizing dataset
     tokenized_train = tokenized_dataset(train_df, tokenizer, args)
@@ -34,8 +35,10 @@ def train(train_df, valid_df, train_label, valid_label, args):
     model_config = AutoConfig.from_pretrained(MODEL_NAME)
     model_config.num_labels = 30
 
-    model = CustomModel(model_config, MODEL_NAME)
-    # model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
+    if args.tem:
+        model = CustomModel(model_config, MODEL_NAME)
+    else:
+        model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
     # print(model.config)
     # model.parameters
     model.to(device)
@@ -85,7 +88,7 @@ def main(args):
     seed_everything(args.seed)
 
     # 본인의 datafile 을 넣어주세요
-    train_dataset = load_data("../dataset/train/train.csv")
+    train_dataset = load_data("../dataset/train/train.csv", args)
 
     # fold 별
     fold_valid_f1_list = []
@@ -139,6 +142,7 @@ if __name__ == '__main__':
                         help='what kinds of models (default: klue/roberta-large)')
     parser.add_argument('--run_name', type=str, default='exp', help='name of the W&B run (default: exp)')
     parser.add_argument('--cv', type=bool, default=False, help='using cross validation (default: False)')
+    parser.add_argument('--tem', type=bool, default=False, help='using typed entity marker (default: False)')
 
     # training arguments that don't change well
     parser.add_argument('--output_dir', type=str, default='./results',

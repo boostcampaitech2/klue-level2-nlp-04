@@ -67,22 +67,35 @@ def add_entity_token(row):
     return new_sent
 
 
-def preprocessing_dataset(dataset):
+def preprocessing_dataset(dataset, args):
     """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
-    sentence_list = []
-    for _, row in tqdm(dataset.iterrows()):
-        sentence_list.append(add_entity_token(row))
+    if args.tem:
+        sentence_list = []
+        for _, row in tqdm(dataset.iterrows()):
+            sentence_list.append(add_entity_token(row))
 
-    out_dataset = pd.DataFrame({'sentence': sentence_list,
-                                'label': dataset['label'], })
+        out_dataset = pd.DataFrame({'sentence': sentence_list,
+                                    'label': dataset['label'], })
+    else:
+        subject_entity = []
+        object_entity = []
+        for i, j in zip(dataset['subject_entity'], dataset['object_entity']):
+            i = i[1:-1].split(',')[0].split(':')[1]
+            j = j[1:-1].split(',')[0].split(':')[1]
+
+            subject_entity.append(i)
+            object_entity.append(j)
+        out_dataset = pd.DataFrame(
+            {'id': dataset['id'], 'sentence': dataset['sentence'], 'subject_entity': subject_entity,
+             'object_entity': object_entity, 'label': dataset['label'], })
 
     return out_dataset
 
 
-def load_data(dataset_dir):
+def load_data(dataset_dir, args):
     """ csv 파일을 경로에 맡게 불러 옵니다. """
     pd_dataset = pd.read_csv(dataset_dir)
-    dataset = preprocessing_dataset(pd_dataset)
+    dataset = preprocessing_dataset(pd_dataset, args)
 
     return dataset
 
@@ -100,75 +113,91 @@ def load_test_dataset(test_dataset, tokenizer, args):
 
 def tokenized_dataset(dataset, tokenizer, args):
     """ tokenizer에 따라 sentence를 tokenizing 합니다."""
+    if args.tem:
+        # typed entity marker 적용
+        e_p_list = []
+        for sent in dataset.sentence:
+            tokenized_sent = tokenizer.tokenize(sent)
 
-    e_p_list = []
-    for sent in dataset.sentence:
-        tokenized_sent = tokenizer.tokenize(sent)
+            e11_p = tokenized_sent.index('<e1>')  # the start position of entity1
+            e12_p = tokenized_sent.index('</e1>')  # the end position of entity1
+            e21_p = tokenized_sent.index('<e2>')  # the start position of entity2
+            e22_p = tokenized_sent.index('</e2>')  # the end position of entity2
+            e31_p = tokenized_sent.index('<e3>')  # the start position of entity3
+            e32_p = tokenized_sent.index('</e3>')  # the end position of entity3
+            e41_p = tokenized_sent.index('<e4>')  # the start position of entity4
+            e42_p = tokenized_sent.index('</e4>')  # the end position of entity4
 
-        e11_p = tokenized_sent.index('<e1>')  # the start position of entity1
-        e12_p = tokenized_sent.index('</e1>')  # the end position of entity1
-        e21_p = tokenized_sent.index('<e2>')  # the start position of entity2
-        e22_p = tokenized_sent.index('</e2>')  # the end position of entity2
-        e31_p = tokenized_sent.index('<e3>')  # the start position of entity3
-        e32_p = tokenized_sent.index('</e3>')  # the end position of entity3
-        e41_p = tokenized_sent.index('<e4>')  # the start position of entity4
-        e42_p = tokenized_sent.index('</e4>')  # the end position of entity4
+            # Replace the token
+            tokenized_sent[e11_p] = "@"
+            tokenized_sent[e12_p] = "@"
+            tokenized_sent[e21_p] = "#"
+            tokenized_sent[e22_p] = "#"
+            tokenized_sent[e31_p] = "*"
+            tokenized_sent[e32_p] = "*"
+            tokenized_sent[e41_p] = "∧"
+            tokenized_sent[e42_p] = "∧"
 
-        # Replace the token
-        tokenized_sent[e11_p] = "@"
-        tokenized_sent[e12_p] = "@"
-        tokenized_sent[e21_p] = "#"
-        tokenized_sent[e22_p] = "#"
-        tokenized_sent[e31_p] = "*"
-        tokenized_sent[e32_p] = "*"
-        tokenized_sent[e41_p] = "∧"
-        tokenized_sent[e42_p] = "∧"
+            # Add 1 because of the [CLS] token
+            e11_p += 1
+            e12_p += 1
+            e21_p += 1
+            e22_p += 1
+            e31_p += 1
+            e32_p += 1
+            e41_p += 1
+            e42_p += 1
 
-        # Add 1 because of the [CLS] token
-        e11_p += 1
-        e12_p += 1
-        e21_p += 1
-        e22_p += 1
-        e31_p += 1
-        e32_p += 1
-        e41_p += 1
-        e42_p += 1
+            e_p_list.append([e11_p, e12_p, e21_p, e22_p, e31_p, e32_p, e41_p, e42_p])
 
-        e_p_list.append([e11_p, e12_p, e21_p, e22_p, e31_p, e32_p, e41_p, e42_p])
+        tokenized_sentences = tokenizer(
+            list(dataset['sentence']),
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=256,
+            add_special_tokens=True,
+            return_token_type_ids=False if 'roberta' in args.model_name else True,
+        )
 
-    tokenized_sentences = tokenizer(
-        list(dataset['sentence']),
-        return_tensors="pt",
-        padding=True,
-        truncation=True,
-        max_length=256,
-        add_special_tokens=True,
-        return_token_type_ids=False if 'roberta' in args.model_name else True,
-    )
+        e1_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                   for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+        e2_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                   for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+        e3_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                   for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+        e4_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                   for _ in range(tokenized_sentences['attention_mask'].shape[0])]
 
-    e1_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
-               for _ in range(tokenized_sentences['attention_mask'].shape[0])]
-    e2_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
-               for _ in range(tokenized_sentences['attention_mask'].shape[0])]
-    e3_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
-               for _ in range(tokenized_sentences['attention_mask'].shape[0])]
-    e4_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
-               for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+        for i, e_p in enumerate(tqdm(e_p_list)):
+            e1_mask[i][e_p[0]] = 1
+            e1_mask[i][e_p[1]] = 1
+            e2_mask[i][e_p[2]] = 1
+            e2_mask[i][e_p[3]] = 1
+            e3_mask[i][e_p[4]] = 1
+            e3_mask[i][e_p[5]] = 1
+            e4_mask[i][e_p[6]] = 1
+            e4_mask[i][e_p[7]] = 1
 
-    for i, e_p in enumerate(tqdm(e_p_list)):
-        e1_mask[i][e_p[0]] = 1
-        e1_mask[i][e_p[1]] = 1
-        e2_mask[i][e_p[2]] = 1
-        e2_mask[i][e_p[3]] = 1
-        e3_mask[i][e_p[4]] = 1
-        e3_mask[i][e_p[5]] = 1
-        e4_mask[i][e_p[6]] = 1
-        e4_mask[i][e_p[7]] = 1
-
-    tokenized_sentences['e1_mask'] = torch.tensor(e1_mask, dtype=torch.long)
-    tokenized_sentences['e2_mask'] = torch.tensor(e2_mask, dtype=torch.long)
-    tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
-    tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
+        tokenized_sentences['e1_mask'] = torch.tensor(e1_mask, dtype=torch.long)
+        tokenized_sentences['e2_mask'] = torch.tensor(e2_mask, dtype=torch.long)
+        tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
+        tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
+    else:
+        # baseline code
+        concat_entity = []
+        for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
+            temp = ''
+            temp = e01 + '[SEP]' + e02
+            concat_entity.append(temp)
+        tokenized_sentences = tokenizer(
+            concat_entity,
+            list(dataset['sentence']),
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=256,
+            add_special_tokens=True,
+        )
 
     return tokenized_sentences
-
