@@ -64,6 +64,7 @@ def load_test_dataset(dataset_dir, tokenizer):
 
 
 def main(model_name, model_dir, analysis_dir):
+    print(model_name, model_dir, analysis_dir)
     """
       주어진 dataset csv 파일과 같은 형태일 경우 inference 가능한 코드입니다.
     """
@@ -103,11 +104,11 @@ if __name__ == '__main__':
     experiment_list, model_list = get_experiment_dict()
 
     model_name, wandb_name = model_list[0]  # idx 0 is ("klue/roberta-base", "KLUE-RoBERTa-base")
-    experiment_name = experiment_list[2]  # idx 2 is "DataAug"
+    experiment_name = experiment_list[2]  # idx 2 is "DataAug-AEDA"
     # model_dir = os.path.join('./best_model/', experiment_name, wandb_name)
-    checkpoint = 'checkpoint-8100'
-    model_dir = os.path.join('./results', wandb_name, checkpoint)
-    analysis_dir = os.path.join('./analysis/', f'{experiment_name}:{wandb_name}:{checkpoint}')
+    checkpoint = 'checkpoint-3700'
+    model_dir = os.path.join('./results', experiment_name, wandb_name, checkpoint)
+    analysis_dir = os.path.join('./analysis/', f'{experiment_name}_{wandb_name}_{checkpoint}')
 
     ### 🔥🔥🔥🔥🔥🔥🔥🔥
     ### 실행전 반드시 아래를 확인할 것!

@@ -1,8 +1,8 @@
 def get_experiment_dict():
     experiment_list = {
-        0: "", 1: "Model", 2: "DataAug:AEDA",
-        3: "DataAug:Pororo", 4: "Batch",
-        5: "LR", 6: "Warmup-Steps", 7: "K-Fold"
+        0: "", 1: "Model", 2: "DataAug-AEDA",
+        3: "DataAug-Pororo", 4: "Batch",
+        5: "LR", 6: "Warmup_Steps", 7: "K-Fold"
     }
     model_list = {
         0: ("klue/roberta-base", "KLUE-RoBERTa-base"),

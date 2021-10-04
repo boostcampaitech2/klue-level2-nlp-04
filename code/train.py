@@ -137,7 +137,7 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
     training_args = TrainingArguments(
         output_dir=os.path.join('./results/', experiment_name, wandb_name),       # output directory
-        save_total_limit=10,              # number of total save model.
+        save_total_limit=5,              # number of total save model.
         save_strategy="steps",          # save interval : "steps", "epoch", "no"
         save_steps=100,                 # model saving step.
         num_train_epochs=epoch,              # total number of training epochs
@@ -157,7 +157,7 @@ def train(model_name, experiment_name, new_dev_dataset, train_dataset_path, dev_
         metric_for_best_model='micro f1 score',
         seed=seed,
         report_to="wandb",
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
+        # callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
     trainer = Trainer(
         model=model,                         # the instantiated 🤗 Transformers model to be trained
@@ -193,19 +193,17 @@ def main():
     experiment_list, model_list = get_experiment_dict()
 
     # model_name, wandb_name = model_list[3]
-    experiment_name = experiment_list[1]
+    experiment_name = experiment_list[2]
     # for idx, (a, b) in enumerate(model_list.values()):
     # size = len()
 
     ### 🔥🔥🔥🔥🔥🔥🔥🔥
-    ### 실행전 반드시 아래를 확인할 것!
+    ### 실행전 반드시 다음 변수를 확인할 것!
     ### model_name
     ### wandb_name
     ### experiment_name
     ### 🔥🔥🔥🔥🔥🔥🔥
-    for idx in range(1):
-        if idx == 1 or idx == 4:
-            continue
+    for idx in [0]:
         a, b = list(model_list.values())[idx]
         model_name, wandb_name = a, b
 
@@ -213,7 +211,7 @@ def main():
             model_name=model_name,
             experiment_name=experiment_name,
             new_dev_dataset=True,
-            train_dataset_path="../dataset/train/stratified_train.csv",
+            train_dataset_path='../dataset/train/aeda/train_aeda_Kkma_finished.csv',  #"../dataset/train/stratified_train.csv",
             dev_dataset_path="../dataset/train/stratified_dev.csv",
             seed=42,
             epoch=4,

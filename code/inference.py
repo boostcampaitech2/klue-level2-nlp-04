@@ -102,18 +102,18 @@ def main(model_name, model_dir, prediction_dir):
 if __name__ == '__main__':
     experiment_list, model_list = get_experiment_dict()
 
-    model_name, wandb_name = model_list[3]
-    experiment_name = experiment_list[1]
+    model_name, wandb_name = model_list[0]  # idx 0 is ("klue/roberta-base", "KLUE-RoBERTa-base")
+    experiment_name = experiment_list[2]  # idx 2 is "DataAug-AEDA"
     # model_dir = os.path.join('./best_model/', experiment_name, wandb_name)
-    checkpoint = 'checkpoint-8100'
-    model_dir = os.path.join('./results', wandb_name, checkpoint)
-    prediction_dir = os.path.join('./prediction/', f'{experiment_name}:{wandb_name}:{checkpoint}')
+    checkpoint = 'checkpoint-3700'
+    model_dir = os.path.join('./results', experiment_name, wandb_name, checkpoint)
+    prediction_dir = os.path.join('./prediction/', f'{experiment_name}_{wandb_name}_{checkpoint}')
 
     ### 🔥🔥🔥🔥🔥🔥🔥🔥
-    ### 실행전 반드시 아래를 확인할 것!
-    ### model_name
-    ### wandb_name
+    ### 실행전 반드시 아래 변수를 확인할 것!
+    ### model_name, wandb_name
     ### experiment_name
+    ### checkpoint
     ### 🔥🔥🔥🔥🔥🔥🔥
     main(model_name=model_name,
          model_dir=model_dir,
