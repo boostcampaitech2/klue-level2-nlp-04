@@ -7,18 +7,22 @@
 |2|[Model Comparison](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#2-model-comparison-)|[KoElectra](https://github.com/monologg/KoELECTRA), [KLUE/RoBERTa](https://github.com/KLUE-benchmark/KLUE)|`100%`|
 |3|[DATA Augmentation : Data Analysis](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#3-data-augmentation--data-analysis-)|||
 |4|[DATA Augmentation : KoEDA](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#4-data-augmentation--koeda-)|https://github.com/toriving/KoEDA||
+||Loss Function Experiment||
+||Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
+||K-Fold Validation Training||
+
 |5|[DATA Augmentation : Pororo](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#5-data-augmentation--pororo-) |https://github.com/kakaobrain/pororo||
 ||Hyperparameter Tuning|https://medium.com/distributed-computing-with-ray/hyperparameter-optimization-for-transformers-a-guide-c4e32c6c989b|
 ||DATA Augmentation : KoBart|[KoBart](https://github.com/SKT-AI/KoBART)||
 ||DATA Augmentation : KoGPT2|[KoGPT2](https://github.com/gyunggyung/KoGPT2-FineTuning)||
-||Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
+
 ||Additional Pretraining on dataset by MASK token|https://dacon.io/competitions/official/235747/codeshare/3072||
 ||Fine-tuning like Pre-tranining|[오피스아워 정리 6번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770) / [HuggingFace-Bert](https://github.com/huggingface/transformers/blob/master/src/transformers/models/bert/modeling_bert.py)||
 ||Making Classifier Deeper||
 ||Mutli Label Classification||
-||K-Fold Validation Training||
+
 ||Hyperparameter Experiment|epoch, lr, batch_size, warmup_steps,||
-||Loss Function Experiment||
+
 |||||
 
 다음과 같은 요소를 반드시 포함하여 비교할 것
