@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoConfig
 from torch.utils.data import DataLoader
 from load_data import *
-from models import CustomModel
+from model import CustomModel
 from utils import *
 import pandas as pd
 import torch

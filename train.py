@@ -5,7 +5,7 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassifi
     TrainingArguments, EarlyStoppingCallback
 from load_data import *
 from utils import *
-from models import CustomModel
+from model import CustomModel
 
 # wandb description silent
 os.environ['WANDB_SILENT'] = "true"
@@ -145,10 +145,10 @@ if __name__ == '__main__':
                         help='output directory (default: ./results)')
     parser.add_argument('--save_total_limit', type=int, default=1, help='number of total save model (default: 1)')
     parser.add_argument('--save_steps', type=int, default=200, help='model saving step (default: 200)')
-    parser.add_argument('--learning_rate', type=float, default=5e-5, help='learning_rate (default: 5e-5)')
+    parser.add_argument('--learning_rate', type=float, default=3e-5, help='learning_rate (default: 5e-5)')
     parser.add_argument('--warmup_steps', type=int, default=1000,
                         help='number of warmup steps for learning rate scheduler (default: 300)')
-    parser.add_argument('--weight_decay', type=float, default=0.01,
+    parser.add_argument('--weight_decay', type=float, default=0,
                         help='strength of wight decay (default: 0.01)')
     parser.add_argument('--logging_dir', type=str, default='./logs',
                         help='directory for storing logs (default: ./logs)')

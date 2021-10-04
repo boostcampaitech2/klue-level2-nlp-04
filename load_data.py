@@ -28,21 +28,39 @@ def add_entity_token(row):
     se = literal_eval(row['subject_entity'])
     oe = literal_eval(row['object_entity'])
 
+    'DAT', 'LOC', 'NOH', 'ORG', 'PER', 'POH'
+
     new_sent = ''
     if se['start_idx'] < oe['start_idx']:
         new_sent += sent[:se['start_idx']]
-        new_sent += '<e1> <e3> person </e3> ' if se['type'] == 'PER' else '<e1> <e3> organization </e3> '
+        new_sent += '<e1> <e3> PER </e3> ' if se['type'] == 'PER' else \
+            '<e1> <e3> ORG </e3> ' if se['type'] == 'ORG' else \
+                '<e1> <e3> DAT </e3> ' if se['type'] == 'DAT' else \
+                    '<e1> <e3> LOC </e3> ' if se['type'] == 'LOC' else \
+                        '<e1> <e3> NOH </e3> ' if se['type'] == 'NOH' else '<e1> <e3> POH </e3> '
         new_sent += sent[se['start_idx']:se['end_idx'] + 1] + ' </e1> '
         new_sent += sent[se['end_idx'] + 1:oe['start_idx']]
-        new_sent += '<e2> <e4> person </e4> ' if oe['type'] == 'PER' else '<e2> <e4> organization </e4> '
+        new_sent += '<e2> <e4> PER </e4> ' if oe['type'] == 'PER' else \
+            '<e2> <e4> ORG </e4> ' if oe['type'] == 'ORG' else \
+                '<e2> <e4> DAT </e4> ' if oe['type'] == 'DAT' else \
+                    '<e2> <e4> LOC </e4> ' if oe['type'] == 'LOC' else \
+                        '<e2> <e4> NOH </e4> ' if oe['type'] == 'NOH' else '<e2> <e4> POH </e4> '
         new_sent += sent[oe['start_idx']:oe['end_idx'] + 1] + ' </e2> '
         new_sent += sent[oe['end_idx'] + 1:]
     else:
         new_sent += sent[:oe['start_idx']]
-        new_sent += '<e2> <e4> person </e4> ' if oe['type'] == 'PER' else '<e2> <e4> organization </e4> '
+        new_sent += '<e2> <e4> PER </e4> ' if oe['type'] == 'PER' else \
+            '<e2> <e4> ORG </e4> ' if oe['type'] == 'ORG' else \
+                '<e2> <e4> DAT </e4> ' if oe['type'] == 'DAT' else \
+                    '<e2> <e4> LOC </e4> ' if oe['type'] == 'LOC' else \
+                        '<e2> <e4> NOH </e4> ' if oe['type'] == 'NOH' else '<e2> <e4> POH </e4> '
         new_sent += sent[oe['start_idx']:oe['end_idx'] + 1] + ' </e2> '
         new_sent += sent[oe['end_idx'] + 1:se['start_idx']]
-        new_sent += '<e1> <e3> person </e3> ' if se['type'] == 'PER' else '<e1> <e3> organization </e3> '
+        new_sent += '<e1> <e3> PER </e3> ' if se['type'] == 'PER' else \
+            '<e1> <e3> ORG </e3> ' if se['type'] == 'ORG' else \
+                '<e1> <e3> DAT </e3> ' if se['type'] == 'DAT' else \
+                    '<e1> <e3> LOC </e3> ' if se['type'] == 'LOC' else \
+                        '<e1> <e3> NOH </e3> ' if se['type'] == 'NOH' else '<e1> <e3> POH </e3> '
         new_sent += sent[se['start_idx']:se['end_idx'] + 1] + ' </e1> '
         new_sent += sent[se['end_idx'] + 1:]
 
