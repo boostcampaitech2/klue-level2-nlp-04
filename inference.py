@@ -47,15 +47,16 @@ def main(args):
     # load tokenizer
     Tokenizer_NAME = args.model_name
     tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
-                                                         '<e3>', '</e3>', '<e4>', '</e4>']}
-    tokenizer.add_special_tokens(special_tokens_dict)
+    if args.tem:
+        special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
+                                                             '<e3>', '</e3>', '<e4>', '</e4>']}
+        tokenizer.add_special_tokens(special_tokens_dict)
 
     ## load test datset
     test_dataset_dir = "../dataset/test/test_data.csv"
     test_df = pd.read_csv(test_dataset_dir)
     test_id = test_df['id'].values.tolist()
-    test_dataset = preprocessing_dataset(test_df)
+    test_dataset = preprocessing_dataset(test_df, args)
     test_dataset, test_label = load_test_dataset(test_dataset, tokenizer, args)
     Re_test_dataset = RE_Dataset(test_dataset, test_label)
 
@@ -69,8 +70,10 @@ def main(args):
     output_probs = np.zeros((test_df.shape[0], 30))
     for model_name in model_list:
         MODEL_NAME = model_name
-        model = CustomModel.from_pretrained(MODEL_NAME, model_name=MODEL_NAME)
-        # model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+        if args.tem:
+            model = CustomModel.from_pretrained(MODEL_NAME, model_name=MODEL_NAME)
+        else:
+            model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
         # model.parameters
         model.to(device)

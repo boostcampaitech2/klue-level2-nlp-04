@@ -28,8 +28,6 @@ def add_entity_token(row):
     se = literal_eval(row['subject_entity'])
     oe = literal_eval(row['object_entity'])
 
-    'DAT', 'LOC', 'NOH', 'ORG', 'PER', 'POH'
-
     new_sent = ''
     if se['start_idx'] < oe['start_idx']:
         new_sent += sent[:se['start_idx']]

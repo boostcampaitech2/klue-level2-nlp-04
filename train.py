@@ -37,12 +37,12 @@ def train(train_df, valid_df, train_label, valid_label, args):
 
     if args.tem:
         model = CustomModel(model_config, MODEL_NAME)
+        model.model.resize_token_embeddings(len(tokenizer))
     else:
         model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
     # print(model.config)
     # model.parameters
     model.to(device)
-    model.model.resize_token_embeddings(len(tokenizer))
 
     # 사용한 option 외에도 다양한 option들이 있습니다.
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
@@ -98,6 +98,8 @@ def main(args):
         if not args.cv:
             if fold > 1:
                 break
+        if fold < 3:
+            continue
         print(f'>> Cross Validation {fold} Starts!')
 
         # load dataset
