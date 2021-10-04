@@ -28,9 +28,9 @@ def inference(model, tokenized_sent, device, args):
             data = {k: v.to(device) for k, v in data.items() if k != 'labels'}
         with torch.no_grad():
             outputs = model(**data)
-                # input_ids=data['input_ids'].to(device),
-                # attention_mask=data['attention_mask'].to(device),
-                # token_type_ids=data['token_type_ids'].to(device),
+            # input_ids=data['input_ids'].to(device),
+            # attention_mask=data['attention_mask'].to(device),
+            # token_type_ids=data['token_type_ids'].to(device),
 
         logits = outputs[0]
         prob = F.softmax(logits, dim=-1).detach().cpu().numpy()
@@ -128,4 +128,3 @@ if __name__ == '__main__':
 
     print(args)
     main(args)
-
