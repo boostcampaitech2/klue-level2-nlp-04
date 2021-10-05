@@ -162,25 +162,31 @@ def tokenized_dataset(dataset, tokenizer, args):
                    for _ in range(tokenized_sentences['attention_mask'].shape[0])]
         e2_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
                    for _ in range(tokenized_sentences['attention_mask'].shape[0])]
-        e3_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
-                   for _ in range(tokenized_sentences['attention_mask'].shape[0])]
-        e4_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
-                   for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+        # e3_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+        #            for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+        # e4_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+        #            for _ in range(tokenized_sentences['attention_mask'].shape[0])]
 
         for i, e_p in enumerate(tqdm(e_p_list)):
-            e1_mask[i][e_p[0]] = 1
-            e1_mask[i][e_p[1]] = 1
-            e2_mask[i][e_p[2]] = 1
-            e2_mask[i][e_p[3]] = 1
-            e3_mask[i][e_p[4]] = 1
-            e3_mask[i][e_p[5]] = 1
-            e4_mask[i][e_p[6]] = 1
-            e4_mask[i][e_p[7]] = 1
+            # '#', '@' 사이에 있는 토큰의 output vector 전부 사용하는 방법
+            for j in range(e_p[0], e_p[1] + 1):
+                e1_mask[i][j] = 1
+            for j in range(e_p[2], e_p[3] + 1):
+                e2_mask[i][j] = 1
+            # '#', '*', '@', '∧' 토큰 output vector 만을 사용하는 방법
+            # e1_mask[i][e_p[0]] = 1
+            # e1_mask[i][e_p[1]] = 1
+            # e2_mask[i][e_p[2]] = 1
+            # e2_mask[i][e_p[3]] = 1
+            # e3_mask[i][e_p[4]] = 1
+            # e3_mask[i][e_p[5]] = 1
+            # e4_mask[i][e_p[6]] = 1
+            # e4_mask[i][e_p[7]] = 1
 
         tokenized_sentences['e1_mask'] = torch.tensor(e1_mask, dtype=torch.long)
         tokenized_sentences['e2_mask'] = torch.tensor(e2_mask, dtype=torch.long)
-        tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
-        tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
+        # tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
+        # tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
     else:
         # baseline code
         concat_entity = []
