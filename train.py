@@ -88,8 +88,8 @@ def main(args):
     seed_everything(args.seed)
 
     # 본인의 datafile 을 넣어주세요
-    # train_dataset = load_data("../dataset/train/train.csv", args)
-    train_dataset = train_data_with_addition(args)
+    train_dataset = load_data("../dataset/train/train.csv", args)
+    # train_dataset = train_data_with_addition(args)
 
     # fold 별
     fold_valid_f1_list = []
@@ -143,7 +143,7 @@ if __name__ == '__main__':
                         help='what kinds of models (default: klue/roberta-large)')
     parser.add_argument('--run_name', type=str, default='exp', help='name of the W&B run (default: exp)')
     parser.add_argument('--cv', type=bool, default=True, help='using cross validation (default: False)')
-    parser.add_argument('--tem', type=bool, default=False, help='using typed entity marker (default: False)')
+    parser.add_argument('--tem', type=bool, default=True, help='using typed entity marker (default: False)')
 
     # training arguments that don't change well
     parser.add_argument('--output_dir', type=str, default='./results',
