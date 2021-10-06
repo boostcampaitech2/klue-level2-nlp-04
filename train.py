@@ -147,13 +147,13 @@ if __name__ == '__main__':
     # training arguments that don't change well
     parser.add_argument('--output_dir', type=str, default='./results',
                         help='output directory (default: ./results)')
-    parser.add_argument('--save_total_limit', type=int, default=1, help='number of total save model (default: 1)')
-    parser.add_argument('--save_steps', type=int, default=200, help='model saving step (default: 200)')
+    parser.add_argument('--save_total_limit', type=int, default=2, help='number of total save model (default: 1)')
+    parser.add_argument('--save_steps', type=int, default=100, help='model saving step (default: 100)')
     parser.add_argument('--learning_rate', type=float, default=3e-5, help='learning_rate (default: 5e-5)')
     parser.add_argument('--warmup_steps', type=int, default=1000,
                         help='number of warmup steps for learning rate scheduler (default: 300)')
-    parser.add_argument('--weight_decay', type=float, default=0,
-                        help='strength of wight decay (default: 0.01)')
+    parser.add_argument('--weight_decay', type=float, default=0.01,
+                        help='strength of weight decay (default: 0.01)')
     parser.add_argument('--logging_dir', type=str, default='./logs',
                         help='directory for storing logs (default: ./logs)')
     parser.add_argument('--logging_steps', type=int, default=100,
@@ -163,15 +163,15 @@ if __name__ == '__main__':
     # `no`: No evaluation during training.
     # `steps`: Evaluate every `eval_steps`.
     # `epoch`: Evaluate every end of epoch.
-    parser.add_argument('--eval_steps', type=int, default=200, help='evaluation step (default: 200)')
+    parser.add_argument('--eval_steps', type=int, default=100, help='evaluation step (default: 100)')
     parser.add_argument('--metric_for_best_model', type=str, default='micro f1 score',
                         help='metric_for_best_model (default: micro f1 score), log_loss')
     parser.add_argument('--load_best_model_at_end', type=bool, default=True, help='(default: True)')
     parser.add_argument('--report_to', type=str, default='wandb', help='(default: wandb)')
     parser.add_argument('--project_name', type=str, default='p_stage_klue',
                         help='wandb project name (default: p_stage_klue')
-    parser.add_argument('--early_stopping_patience', type=int, default=3,
-                        help='number of early_stopping_patience (default: 3)')
+    parser.add_argument('--early_stopping_patience', type=int, default=7,
+                        help='number of early_stopping_patience (default: 7)')
 
     args = parser.parse_args()
     print(args)

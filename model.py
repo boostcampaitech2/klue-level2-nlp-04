@@ -6,7 +6,7 @@ from loss import LabelSmoothingLoss
 
 
 class FCLayer(nn.Module):
-    def __init__(self, input_dim, output_dim, dropout_rate=0.3, use_activation=True):
+    def __init__(self, input_dim, output_dim, dropout_rate=0.1, use_activation=True):
         super(FCLayer, self).__init__()
         self.use_activation = use_activation
         self.dropout = nn.Dropout(dropout_rate)
@@ -30,16 +30,12 @@ class CustomModel(BertPreTrainedModel):
 
         self.cls_fc_layer = FCLayer(config.hidden_size, config.hidden_size)
         self.entity_fc_layer = FCLayer(config.hidden_size, config.hidden_size)
-        self.label_classifier = FCLayer(
-            config.hidden_size * 3,
-            config.num_labels,
-            use_activation=False,
+        self.label_classifier = nn.Sequential(
+            nn.Linear(3 * config.hidden_size, config.hidden_size),
+            nn.ReLU(),
+            nn.Dropout(p=0.1),
+            nn.Linear(config.hidden_size, config.num_labels)
         )
-        # self.label_classifier = FCLayer(
-        #     config.hidden_size * 5,
-        #     config.num_labels,
-        #     use_activation=False,
-        # )
 
     @staticmethod
     def entity_average(hidden_output, e_mask):
@@ -72,13 +68,6 @@ class CustomModel(BertPreTrainedModel):
         # e3_h = self.entity_average(sequence_output, e3_mask)
         # e4_h = self.entity_average(sequence_output, e4_mask)
 
-        # Dropout -> tanh -> fc_layer (Share FC layer for e1 and e2)
-        pooled_output = self.cls_fc_layer(pooled_output)
-        e1_h = self.entity_fc_layer(e1_h)
-        e2_h = self.entity_fc_layer(e2_h)
-        # e3_h = self.entity_fc_layer(e3_h)
-        # e4_h = self.entity_fc_layer(e4_h)
-
         # Concat -> fc_layer
         concat_h = torch.cat([pooled_output, e1_h, e2_h], dim=-1)
         # concat_h = torch.cat([pooled_output, e1_h, e2_h, e3_h, e4_h], dim=-1)
@@ -99,3 +88,4 @@ class CustomModel(BertPreTrainedModel):
             outputs = (loss,) + outputs
 
         return outputs  # (loss), logits, (hidden_states), (attentions)
+

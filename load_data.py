@@ -69,10 +69,16 @@ def preprocessing_dataset(dataset, args):
     """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
     if args.tem:
         sentence_list = []
+        subject_entity = []
+        object_entity = []
         for _, row in tqdm(dataset.iterrows()):
             sentence_list.append(add_entity_token(row))
+            subject_entity.append(eval(row['subject_entity'])['word'])
+            object_entity.append(eval(row['object_entity'])['word'])
 
         out_dataset = pd.DataFrame({'sentence': sentence_list,
+                                    'subject_entity': subject_entity,
+                                    'object_entity': object_entity,
                                     'label': dataset['label'], })
     else:
         subject_entity = []
@@ -148,8 +154,15 @@ def tokenized_dataset(dataset, tokenizer, args):
 
             e_p_list.append([e11_p, e12_p, e21_p, e22_p, e31_p, e32_p, e41_p, e42_p])
 
+        # concat_entity = []
+        # for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
+        #     temp = ''
+        #     temp = e01 + ' ' + e02
+        #     concat_entity.append(temp)
+
         tokenized_sentences = tokenizer(
             list(dataset['sentence']),
+            # concat_entity,
             return_tensors="pt",
             padding=True,
             truncation=True,
@@ -206,3 +219,4 @@ def tokenized_dataset(dataset, tokenizer, args):
         )
 
     return tokenized_sentences
+
