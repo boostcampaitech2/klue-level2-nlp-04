@@ -187,8 +187,8 @@ def tokenized_dataset(dataset, tokenizer, args):
 
         tokenized_sentences['e1_mask'] = torch.tensor(e1_mask, dtype=torch.long)
         tokenized_sentences['e2_mask'] = torch.tensor(e2_mask, dtype=torch.long)
-        # tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
-        # tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
+        tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
+        tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
     else:
         # baseline code
         concat_entity = []
