@@ -4,6 +4,8 @@
 key
 *.csv
 wandb/
+*.json
+*.bin
 
 
 # Byte-compiled / optimized / DLL files
