@@ -72,7 +72,8 @@ def main(args):
     else:
         model_list = glob(os.path.join(args.model_dir, args.model_name.split('/')[-1], args.run_name[0]))
     output_probs = np.zeros((test_df.shape[0], 30))
-    for model_name in model_list:
+    for i, model_name in enumerate(model_list, start=1):
+        print(f'{i} 번째 inference 진행 중!')
         MODEL_NAME = model_name
         if args.tem:
             model = CustomModel.from_pretrained(MODEL_NAME, model_name=MODEL_NAME)
