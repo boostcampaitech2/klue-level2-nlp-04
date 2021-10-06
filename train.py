@@ -141,8 +141,8 @@ if __name__ == '__main__':
                         help='batch size for evaluation (default: 128)')
     parser.add_argument('--model_name', type=str, default='klue/roberta-large',
                         help='what kinds of models (default: klue/roberta-large)')
-    parser.add_argument('--run_name', type=str, default='exp', help='name of the W&B run (default: exp)')
-    parser.add_argument('--cv', type=bool, default=True, help='using cross validation (default: False)')
+    parser.add_argument('--run_name', type=str, default='tem, crossentropy', help='name of the W&B run (default: exp)')
+    parser.add_argument('--cv', type=bool, default=False, help='using cross validation (default: False)')
     parser.add_argument('--tem', type=bool, default=True, help='using typed entity marker (default: False)')
 
     # training arguments that don't change well

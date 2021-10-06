@@ -86,7 +86,7 @@ class CustomModel(BertPreTrainedModel):
                 loss_fct = nn.MSELoss()
                 loss = loss_fct(logits.view(-1), labels.view(-1))
             else:
-                loss_fct = FocalLoss()
+                loss_fct = nn.CrossEntropyLoss()
                 # loss_fct = LabelSmoothingLoss(smoothing=0.1)
                 loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
 

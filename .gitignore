@@ -4,6 +4,8 @@
 key
 *.csv
 wandb/
+best_model/
+results/
 
 
 # Byte-compiled / optimized / DLL files
