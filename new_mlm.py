@@ -18,6 +18,7 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
+import tqdm
 
 # utils.py: https://gist.github.com/Kitsunetic/833143d9cc89325c7e95bf3d3a0d4fcf <- seed_everything, make_result_dir 함수 원본
 # MLM 원본 : https://dacon.io/competitions/official/235747/codeshare/3072#
@@ -52,7 +53,7 @@ def make_result_dir(config):
 @dataclass
 class Config:
     seed: int = 8888
-    result_dir_root = Path(MLM 학습 후 모델 저장을 위한 디렉토리의 상위 경로) # ex) /opt/ml/mlm에 모델들을 저장할 생각이라면 '/opt/ml/mlm'을 넣어주면 됩니다.
+    result_dir_root = Path('/opt/ml/mlm') # ex) /opt/ml/mlm에 모델들을 저장할 생각이라면 '/opt/ml/mlm'을 넣어주면 됩니다.
     result_dir: Path = result_dir_root
 
     nlp_model_name: str = "klue/roberta-base"
@@ -60,7 +61,9 @@ class Config:
     epochs: int = 2
     save_step: int = 30000
 
-    dataset_dir: str = 학습 데이터셋의 상위 경로 # ex) /opt/ml/dataset/train/train.csv 이라면 '/opt/ml/dataset/train' 부분을 넣어주면 됩니다(상대 경로도 가능합니다).
+    dataset_dir: str = './' # ex) /opt/ml/dataset/train/train.csv 이라면 '/opt/ml/dataset/train' 부분을 넣어주면 됩니다(상대 경로도 가능합니다).
+    # dataset_dir: str = '/opt/ml/dataset/test'
+    # dataset_dir: str = '/opt/ml/dataset'
     batch_size: int = 32
     mlm_probability: float = 0.15
 
@@ -158,12 +161,82 @@ def tokenized_dataset(dataset, tokenizer):
       )
   return tokenized_sentences
 
+def tokenized_dataset_tm(dataset, tokenizer):
+    """ tokenizer에 따라 sentence를 tokenizing 합니다."""
+    e_p_list = []
+    for sent in dataset.sentence:
+        tokenized_sent = tokenizer.tokenize(sent)
+
+        e11_p = tokenized_sent.index('<e1>')  # the start position of entity1
+        e12_p = tokenized_sent.index('</e1>')  # the end position of entity1
+        e21_p = tokenized_sent.index('<e2>')  # the start position of entity2
+        e22_p = tokenized_sent.index('</e2>')  # the end position of entity2
+        e31_p = tokenized_sent.index('<e3>')  # the start position of entity3
+        e32_p = tokenized_sent.index('</e3>')  # the end position of entity3
+        e41_p = tokenized_sent.index('<e4>')  # the start position of entity4
+        e42_p = tokenized_sent.index('</e4>')  # the end position of entity4
+
+         # Replace the token
+        tokenized_sent[e11_p] = "@"
+        tokenized_sent[e12_p] = "@"
+        tokenized_sent[e21_p] = "#"
+        tokenized_sent[e22_p] = "#"
+        tokenized_sent[e31_p] = "*"
+        tokenized_sent[e32_p] = "*"
+        tokenized_sent[e41_p] = "∧"
+        tokenized_sent[e42_p] = "∧"
+
+         # Add 1 because of the [CLS] token
+        e11_p += 1
+        e12_p += 1
+        e21_p += 1
+        e22_p += 1
+        e31_p += 1
+        e32_p += 1
+        e41_p += 1
+        e42_p += 1
+
+        e_p_list.append([e11_p, e12_p, e21_p, e22_p, e31_p, e32_p, e41_p, e42_p])
+
+    tokenized_sentences = tokenizer(
+        list(dataset['sentence']),
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=256,
+        add_special_tokens=True,
+        return_token_type_ids=False 
+    )
+
+    e1_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+    e2_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+    e3_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                   for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+    e4_mask = [[0] * tokenized_sentences['attention_mask'].shape[1]
+                for _ in range(tokenized_sentences['attention_mask'].shape[0])]
+
+    for i, e_p in enumerate(tqdm(e_p_list)):
+        e1_mask[i][e_p[0]] = 1
+        e1_mask[i][e_p[1]] = 1
+        e2_mask[i][e_p[2]] = 1
+        e2_mask[i][e_p[3]] = 1
+        e3_mask[i][e_p[4]] = 1
+        e3_mask[i][e_p[5]] = 1
+        e4_mask[i][e_p[6]] = 1
+        e4_mask[i][e_p[7]] = 1
+
+    tokenized_sentences['e1_mask'] = torch.tensor(e1_mask, dtype=torch.long)
+    tokenized_sentences['e2_mask'] = torch.tensor(e2_mask, dtype=torch.long)
+    tokenized_sentences['e3_mask'] = torch.tensor(e3_mask, dtype=torch.long)
+    tokenized_sentences['e4_mask'] = torch.tensor(e4_mask, dtype=torch.long)
 
 
 def main(config: Config):
 
 ################################################## 기본적인 셋팅 #################################################
-    DATA_NAME = '/train_v1.csv'
+    DATA_NAME = 'train_v1.csv'
     DATASET = config.dataset_dir + DATA_NAME # dataset 경로
     seed_everything(config.seed) # seed값 설정 
 
@@ -176,16 +249,22 @@ def main(config: Config):
 
 # 학습시 e01 + '[SEP]' + e02 + dataset['sentence'] 등의 데이터로 학습
 
-    dataset = load_data(DATASET)
-    train_dataset = tokenized_dataset(dataset,tokenizer)
-    ds_train = RE_Dataset(pair_dataset=train_dataset, nums=len(dataset['id']))
+    # dataset = load_data(DATASET)
+    # # # train_dataset = tokenized_dataset(dataset,tokenizer)
+    # train_dataset = tokenized_dataset_tm(dataset,tokenizer)
+    # ds_train = RE_Dataset(pair_dataset=train_dataset, nums=len(dataset['id']))
 
 #--------------------------------------------------------------------------------------------------------------#
 
 # 학습시 dataset['sentence']만 가지고 학습
 
-    # ds_train = DefaultDataset(pd.read_csv(DATASET),tokenizer, config)
+    ds_train = DefaultDataset(pd.read_csv(DATASET),tokenizer, config)
 
+#--------------------------------------------------------------------------------------------------------------#
+
+    # special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
+    #                                                          '<e3>', '</e3>', '<e4>', '</e4>']}
+    # tokenizer.add_special_tokens(special_tokens_dict)
 
 ################################################## train 부분 ###################################################
 
@@ -229,7 +308,7 @@ def main(config: Config):
 if __name__ == "__main__":
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     nlp_model_names = [
-        "klue/roberta-small"
+        "klue/roberta-large"
     ]
     for nlp_model_name in nlp_model_names:
         config = Config()
