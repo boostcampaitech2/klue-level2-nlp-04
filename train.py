@@ -5,7 +5,7 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassifi
     TrainingArguments, EarlyStoppingCallback
 from load_data import *
 from utils import *
-from model import CustomModel
+from model import CustomModel, CustomModel2
 
 # wandb description silent
 os.environ['WANDB_SILENT'] = "true"
@@ -36,7 +36,7 @@ def train(train_df, valid_df, train_label, valid_label, args):
     model_config.num_labels = 30
 
     if args.tem:
-        model = CustomModel(model_config, MODEL_NAME)
+        model = CustomModel2(model_config, MODEL_NAME)
         model.model.resize_token_embeddings(len(tokenizer))
     else:
         model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
@@ -98,31 +98,33 @@ def main(args):
         if not args.cv:
             if fold > 1:
                 break
-        print(f'>> Cross Validation {fold} Starts!')
 
-        # load dataset
-        train_df = train_dataset.iloc[train_idx]
-        valid_df = train_dataset.iloc[valid_idx]
+        if fold == 1:
+            print(f'>> Cross Validation {fold} Starts!')
 
-        train_label = label_to_num(train_df['label'].values)
-        valid_label = label_to_num(valid_df['label'].values)
+            # load dataset
+            train_df = train_dataset.iloc[train_idx]
+            valid_df = train_dataset.iloc[valid_idx]
 
-        # wandb setting
-        wandb_config = {
-            'epochs': args.epochs,
-            'batch_size': args.batch_size,
-            'model_name': args.model_name,
-        }
+            train_label = label_to_num(train_df['label'].values)
+            valid_label = label_to_num(valid_df['label'].values)
 
-        wandb.init(project=args.project_name,
-                   name=f'{args.run_name}_{fold}',
-                   config=wandb_config,
-                   reinit=True,
-                   )
+            # wandb setting
+            wandb_config = {
+                'epochs': args.epochs,
+                'batch_size': args.batch_size,
+                'model_name': args.model_name,
+            }
 
-        result = train(train_df, valid_df, train_label, valid_label, args)
-        wandb.join()
-        fold_valid_f1_list.append(result['eval_micro f1 score'])
+            wandb.init(project=args.project_name,
+                       name=f'{args.run_name}_{fold}',
+                       config=wandb_config,
+                       reinit=True,
+                       )
+
+            result = train(train_df, valid_df, train_label, valid_label, args)
+            wandb.join()
+            fold_valid_f1_list.append(result['eval_micro f1 score'])
 
     print(f'cv_f1_score: {fold_valid_f1_list}')
     print(f'cv_f1_score: {np.mean(fold_valid_f1_list)}')
