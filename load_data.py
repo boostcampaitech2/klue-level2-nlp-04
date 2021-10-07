@@ -120,42 +120,27 @@ def tokenized_dataset(dataset, tokenizer, args):
     if args.tem:
         # typed entity marker 적용
         e_p_list = []
+        tokenized_sent_list = []
         for sent in dataset.sentence:
             tokenized_sent = tokenizer.tokenize(sent)
 
-            e11_p = tokenized_sent.index('<e1>')  # the start position of entity1
-            e12_p = tokenized_sent.index('</e1>')  # the end position of entity1
-            e21_p = tokenized_sent.index('<e2>')  # the start position of entity2
-            e22_p = tokenized_sent.index('</e2>')  # the end position of entity2
-            e31_p = tokenized_sent.index('<e3>')  # the start position of entity3
-            e32_p = tokenized_sent.index('</e3>')  # the end position of entity3
-            e41_p = tokenized_sent.index('<e4>')  # the start position of entity4
-            e42_p = tokenized_sent.index('</e4>')  # the end position of entity4
-
-            # Replace the token
-            tokenized_sent[e11_p] = "@"
-            tokenized_sent[e12_p] = "@"
-            tokenized_sent[e21_p] = "#"
-            tokenized_sent[e22_p] = "#"
-            tokenized_sent[e31_p] = "*"
-            tokenized_sent[e32_p] = "*"
-            tokenized_sent[e41_p] = "∧"
-            tokenized_sent[e42_p] = "∧"
-
             # Add 1 because of the [CLS] token
-            e11_p += 1
-            e12_p += 1
-            e21_p += 1
-            e22_p += 1
-            e31_p += 1
-            e32_p += 1
-            e41_p += 1
-            e42_p += 1
+            e11_p = tokenized_sent.index('<e1>') + 1  # the start position of entity1
+            e12_p = tokenized_sent.index('</e1>') + 1  # the end position of entity1
+            e21_p = tokenized_sent.index('<e2>') + 1  # the start position of entity2
+            e22_p = tokenized_sent.index('</e2>') + 1  # the end position of entity2
+            e31_p = tokenized_sent.index('<e3>') + 1  # the start position of entity3
+            e32_p = tokenized_sent.index('</e3>') + 1  # the end position of entity3
+            e41_p = tokenized_sent.index('<e4>') + 1  # the start position of entity4
+            e42_p = tokenized_sent.index('</e4>') + 1  # the end position of entity4
 
             e_p_list.append([e11_p, e12_p, e21_p, e22_p, e31_p, e32_p, e41_p, e42_p])
+            new_sent = sent.replace('<e1>', '@').replace('</e1>', '@').replace('<e2>', '#').replace('</e2>', '#')
+            new_sent = new_sent.replace('<e3>', '*').replace('</e3>', '*').replace('<e4>', '^').replace('</e4>', '^')
+            tokenized_sent_list.append(new_sent)
 
         tokenized_sentences = tokenizer(
-            list(dataset['sentence']),
+            tokenized_sent_list,
             # concat_entity,
             return_tensors="pt",
             padding=True,
@@ -177,9 +162,9 @@ def tokenized_dataset(dataset, tokenizer, args):
         for i, e_p in enumerate(tqdm(e_p_list)):
             # '#', '*', '@', '∧' 토큰 output vector 만을 사용하는 방법
             e1_mask[i][e_p[0]] = 1
-            e1_mask[i][e_p[1]] = 1
+            # e1_mask[i][e_p[1]] = 1
             e2_mask[i][e_p[2]] = 1
-            e2_mask[i][e_p[3]] = 1
+            # e2_mask[i][e_p[3]] = 1
             e3_mask[i][e_p[4]] = 1
             e3_mask[i][e_p[5]] = 1
             e4_mask[i][e_p[6]] = 1
@@ -208,4 +193,3 @@ def tokenized_dataset(dataset, tokenizer, args):
         )
 
     return tokenized_sentences
-

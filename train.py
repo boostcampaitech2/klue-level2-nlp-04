@@ -14,7 +14,7 @@ os.environ['WANDB_SILENT'] = "true"
 def train(train_df, valid_df, train_label, valid_label, args):
     # load model and tokenizer
     MODEL_NAME = args.model_name
-    tokenizer = AutoTokenizer.from_pretrained('klue/roberta-large')
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     if args.tem:
         special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
                                                              '<e3>', '</e3>', '<e4>', '</e4>']}
@@ -170,8 +170,8 @@ if __name__ == '__main__':
     parser.add_argument('--report_to', type=str, default='wandb', help='(default: wandb)')
     parser.add_argument('--project_name', type=str, default='p_stage_klue',
                         help='wandb project name (default: p_stage_klue')
-    parser.add_argument('--early_stopping_patience', type=int, default=7,
-                        help='number of early_stopping_patience (default: 7)')
+    parser.add_argument('--early_stopping_patience', type=int, default=3,
+                        help='number of early_stopping_patience (default: 3)')
 
     args = parser.parse_args()
     print(args)

@@ -50,7 +50,7 @@ def main(args):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     # load tokenizer
     Tokenizer_NAME = args.model_name
-    tokenizer = AutoTokenizer.from_pretrained('klue/roberta-large')
+    tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
     if args.tem:
         special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
                                                              '<e3>', '</e3>', '<e4>', '</e4>']}
