@@ -80,22 +80,26 @@ $ python face_image.py
   - FaceCrop 후 Resize를 거친 이미지 크기 : (280, 210)
 
 ### Generate CSV files
-- `perfect_train.csv`
+- `train.csv`
 
 ## :running: Training
 
 ### Train Models
-- [EfficientNet](https://arxiv.org/pdf/1905.11946.pdf)
-  - EfficientNet_b2_pruned 
-  - EfficientNet_b4
-- [SEResNet(SE block + ResNet)](https://arxiv.org/pdf/1709.01507.pdf)
-  - SEResNet26d_32x4d
-- [NFNet](https://arxiv.org/pdf/2102.06171.pdf)
-  - NFNet_l0
+- [RoBERTa](https://arxiv.org/pdf/1907.11692.pdf)
+  - klue/roberta-small(https://huggingface.co/klue/roberta-small)
+  - klue/roberta-base(https://huggingface.co/klue/roberta-base)
+  - klue/roberta-large(https://huggingface.co/klue/roberta-large/tree/main)
+- [BERT](https://arxiv.org/pdf/1810.04805.pdf)
+  - klue/bert-base(https://huggingface.co/klue/bert-base)
+- [xlm-roberta-base](https://huggingface.co/xlm-roberta-base)
+- [koelectra-base](https://huggingface.co/monologg/koelectra-base-v3-discriminator)
 ```
 # 단일 모델 train 시
 $ python train.py 
 ```
+
+### Stratified K-fold
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F3gQO8%2FbtqF0ZOHja8%2FSUTbGTYwVndcUJ5qWusqa0%2Fimg.png" height="250">
 
 ### Stratified K-fold
 <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F3gQO8%2FbtqF0ZOHja8%2FSUTbGTYwVndcUJ5qWusqa0%2Fimg.png" height="250">
