@@ -48,23 +48,20 @@ glob2==0.7
 
 ## :mag: Overview
 ### Background
-> COVID-19의 확산으로 우리나라는 물론 전 세계 사람들은 경제적, 생산적인 활동에 많은 제약을 받고있습니다. </br>
-> 확산을 막기위해 많은 노력들을 하고 있지만 COVID-19의 강한 전염력 때문에 우리를 오랫동안 괴롭히고 있습니다. </br>
-> 이를 해결하는 방법은 모든 사람이 마스크로 코와 입을 가려서 혹시 모를 감염자로부터의 전파 경로를 원천 차단하는 것입니다. </br>
-> 이를 위해 우리는 공공장소에서 모든 사람들의 올바른 마스크 착용 상태를 검사하는 시스템이 필요합니다. </br>
-> 즉, **카메라로 비춰진 사람 얼굴 이미지만으로 이 사람이 마스크를 쓰고 있는지, 쓰지 않았는지, </br>
-> 정확히 쓴 것이 맞는지 자동으로 가려낼 수 있는 시스템이 필요합니다.**
+> 관계 추출(Relation Extraction)이란 문장의 단어(Entity)에 대한 속성과 관계를 예측하는 문제입니다.<br>
+> 문장 속에서 단어간에 관계성을 파악하는 관계 추출(Relation Extraction)은 지식 그래프 구축을 위한 핵심 구성 요소로, 구조화된 검색, 감정 분석, 질문 답변하기, 요약과 같은 자연어처리 응용 프로그램에서 중요합니다. 비구조적인 자연어 문장에서 구조적인 triple을 추출해 정보를 요약하고, 중요한 성분을 핵심적으로 파악할 수 있습니다. 
+
 
 ### Problem definition
-> 카메라로 비춰진 사람 얼굴 이미지만으로 이 사람이 마스크를 쓰고 있는지, </br>
-> 쓰지 않았는지, 정확히 쓴 것이 맞는지 자동으로 가려낼 수 있는 시스템 or 모델
+> 주어진 문장과 문장의 단어(subject entity, object entity)를 이용하여, <br>
+> subject entity와 object entity가 어떤 관계가 있는지 예측하는 시스템 or 모델 구축하기
 
 ### Development environment
 - GPU V100 원격 서버
 - PyCharm 또는 Visual Studio Code | Python 3.7(or over)
 
 ### Evaluation
-<img src="https://www.googleapis.com/download/storage/v1/b/kaggle-user-content/o/inbox%2F6390139%2Fb19f3db709b41788c3b1333ef1ae11a9%2Ff1score.png?generation=1608093256720406&alt=media">
+![image](https://user-images.githubusercontent.com/22788924/136509413-3597fc20-6d08-4575-9927-745adc32bf65.png)
 
 ## :mask: Dataset Preparation
 ### Prepare Images
