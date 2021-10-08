@@ -1,8 +1,8 @@
 <div align="center">
-  <h1>pstage_01_image_classification</h1>
+  <h1>KLUE_Relation Extraction</h1>
 </div>
 
-![pstage](https://user-images.githubusercontent.com/51067412/132005999-5cb1ecf0-7992-4ee6-8788-567244d00dbf.PNG)
+![image](https://user-images.githubusercontent.com/85214907/136507555-d8d417b0-1c11-4ea5-bc73-739d28cf8c25.png)
 
 ## :fire: Getting Started
 ### Dependencies
