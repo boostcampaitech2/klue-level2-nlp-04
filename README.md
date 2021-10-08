@@ -8,18 +8,12 @@
 ### Dependencies
 ```python
 torch==1.7.1
-torchvision==0.8.2
-tensorboard==2.6.0
+transformers==4.10.0
 pandas==1.1.5
-opencv-python==4.5.1.48
-scikit-learn==0.24.2
+scikit-learn==0.24.1
 matplotlib==3.3.4
-timm==0.4.12
 tqdm==4.51.0
 numpy==1.19.2
-python-dotenv==0.19.0
-Pillow==8.1.0
-h5py==3.1.0
 glob2==0.7
 ```
 
@@ -27,24 +21,22 @@ glob2==0.7
 - `pip install -r requirements.txt`
 
 ### Contents
-- `dataset.py`
-- `face_image.py` : FaceNet 적용
+- `hyperparameter_search.py`
+- `inference.py`
+- `load_data.py` 
 - `loss.py` 
 - `model.py` 
-- `optimizer.py` 
+- `new_mlm.py` : MLM 적용
 - `train.py`
-- `inference.py`
-- `evaluation.py`
-- `perfect_train.csv` : dataset
+- `utils.py`
+- `train_v1.csv` : 40% of no_relation data
 
 ### Training
-- `SM_CHANNEL_TRAIN=[train image dir] SM_MODEL_DIR=[model saving dir] python train.py`
+- `SM_CHANNEL_TRAIN=[train csv data dir] SM_MODEL_DIR=[model saving dir] python train.py`
 
 ### Inference
-- `SM_CHANNEL_EVAL=[eval image dir] SM_CHANNEL_MODEL=[model saved dir] SM_OUTPUT_DATA_DIR=[inference output dir] python inference.py`
+- `SM_CHANNEL_EVAL=[test csv dir] SM_CHANNEL_MODEL=[model saved dir] SM_OUTPUT_DATA_DIR=[inference output dir] python inference.py`
 
-### Evaluation
-- `SM_GROUND_TRUTH_DIR=[GT dir] SM_OUTPUT_DATA_DIR=[inference output dir] python evaluation.py`
 
 ## :mag: Overview
 ### Background
