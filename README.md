@@ -104,7 +104,7 @@ $ python train.py --cv True
 
 ## :thought_balloon: Inference
 ```
-# 단일 model을 통해 inference 시
+# cross_validation 을 사용안할시
 $ python inference.py \
   --model_name={kinds of models} \
   --model_dir={model_filepath} \
