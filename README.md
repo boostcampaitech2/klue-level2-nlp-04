@@ -55,7 +55,7 @@ glob2==0.7
 ### Evaluation
 ![image](https://user-images.githubusercontent.com/22788924/136509413-3597fc20-6d08-4575-9927-745adc32bf65.png)
 
-## :mask: Dataset Preparation
+## Dataset Preparation
 ### Prepare Images
 <img width="833" alt="스크린샷 2021-10-08 오후 3 27 35" src="https://user-images.githubusercontent.com/46557183/136508822-bc5a076c-b36a-4915-b6b5-693cae21938e.png">
 
