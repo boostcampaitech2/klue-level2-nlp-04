@@ -108,7 +108,6 @@ $ python train.py --cv True
 $ python inference.py \
   --model_name={kinds of models} \
   --model_dir={model_filepath} \
-  --pth_name={model parameter name} \
   --output_name={output_filename} \
   --inference_type=default \
   --run_name = exp\
@@ -121,7 +120,6 @@ $ python inference.py \
 $ python inference.py \
   --model_name={kinds of models} \
   --model_dir={model_filepath} \
-  --pth_name=best \
   --output_name={output_filename} \
   --inference_type = cv\
   --run_name = exp\
