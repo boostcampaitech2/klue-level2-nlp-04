@@ -126,6 +126,3 @@ $ python inference.py \
   --cv = True\
   --tem = (if typed entity: True, else: False)
 ```
-```
-## 📄 Wrap Up Report
-[Wrap Up Report](https://github.com/boostcampaitech2/image-classification-level1-06/files/7109259/_level1_6.1.pdf)
