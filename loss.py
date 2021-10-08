@@ -91,4 +91,6 @@ def create_criterion(criterion_name, **kwargs):
         criterion = create_fn(**kwargs)
     else:
         raise RuntimeError('Unknown loss (%s)' % criterion_name)
+
     return criterion
+

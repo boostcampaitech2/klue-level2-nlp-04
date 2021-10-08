@@ -75,6 +75,7 @@ def main(args):
     else:
         # inference_type=='default' 인 경우 args.run_name 의 model_folder 가져오기
         model_list = glob(os.path.join(args.model_dir, args.model_name.split('/')[-1], args.run_name[0]))
+
     # output 결과값들을 저장할 numpy ndarray 0으로 생성
     output_probs = np.zeros((test_df.shape[0], 30))
     for i, model_name in enumerate(model_list, start=1):
@@ -117,17 +118,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # model dir
-    parser.add_argument('--model_dir', type=str, default="./best_model")
-    parser.add_argument('--model_name', type=str, default='', help='what kinds of models')
-    parser.add_argument('--inference_type', type=str, default="default",
+    parser.add_argument('--model_dir', type=str, default="/opt/ml/klue-level2-nlp-04/best_model/")
+    parser.add_argument('--model_name', type=str, default='klue/roberta-large', help='what kinds of models')
+    parser.add_argument('--inference_type', type=str, default="cv",
                         help='default: (using 30 label) or '
                              'cv: (exp_cv + exp_cv1 + exp_cv2 + exp_cv3 + exp_cv4) or ')
-    parser.add_argument('--run_name', nargs='+', type=str, default=[],
+    parser.add_argument('--run_name', nargs='+', type=str, default='exp',
                         help='names of the W&B run inference_type default or cv: exp_cv or')
     parser.add_argument('--output_dir', type=str, default="./prediction")
     parser.add_argument('--batch_size', type=int, default=512,
                         help='batch size per device during training (default: 512)')
-    parser.add_argument('--tem', type=bool, default="", help='using typed entity marker (default: "")')
+    parser.add_argument('--tem', type=bool, default=True, help='using typed entity marker (default: "")')
 
     args = parser.parse_args()
 

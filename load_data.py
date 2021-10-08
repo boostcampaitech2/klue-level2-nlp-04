@@ -230,4 +230,3 @@ def tokenized_dataset(dataset, tokenizer, args):
         )
 
     return tokenized_sentences
-

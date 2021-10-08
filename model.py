@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from transformers import AutoModel, BertPreTrainedModel
 
-from loss import LabelSmoothingLoss
+from loss import *
 
 
 class FCLayer(nn.Module):
@@ -90,6 +90,7 @@ class CustomModel(BertPreTrainedModel):
                 # loss_fct = nn.CrossEntropyLoss()
                 # label smoothing 적용
                 loss_fct = LabelSmoothingLoss(smoothing=0.1)
+
                 loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
 
             outputs = (loss,) + outputs
