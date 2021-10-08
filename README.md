@@ -103,7 +103,6 @@ $ python train.py --cv True
 
 
 ## :thought_balloon: Inference
-
 ```
 # 단일 model을 통해 inference 시
 $ python inference.py \
@@ -111,6 +110,10 @@ $ python inference.py \
   --model_dir={model_filepath} \
   --pth_name={model parameter name} \
   --output_name={output_filename} \
+  --inference_type=default \
+  --run_name = exp\
+  --cv = False\
+  --tem = (typed entitiy 사용시 True, 아니면 False)
 ```
 
 ```
@@ -120,27 +123,11 @@ $ python inference.py \
   --model_dir={model_filepath} \
   --pth_name=best \
   --output_name={output_filename} \
-  --cv=True
+  --inference_type = cv\
+  --run_name = exp\
+  --cv = True\
+  --tem = (if typed entity: True, else: False)
 ```
-
-```
-# ensemble 을 사용해 inference 시
-$ python inference.py \
-  --ensemble_model_name={kinds of models : 띄어쓰기로 구분한 여러개의 model_name} \
-  --ensemble_model_dir={model_filepath : 띄어쓰기로 구분한 여러개의 model_file_path} \
-  --pth_name=best \
-  --output_name={output_filename} \
-  --ensemble=True
-```
-
-```
-# multilabel inference 시
-$ python inference.py \
-  --model_name={kinds of models} \
-  --model_dir={model_filepath} \
-  --pth_name=best \
-  --output_name={output_filename} \
-  -- multi True
 ```
 ## 📄 Wrap Up Report
 [Wrap Up Report](https://github.com/boostcampaitech2/image-classification-level1-06/files/7109259/_level1_6.1.pdf)
