@@ -71,6 +71,9 @@ glob2==0.7
 <img width="1103" alt="스크린샷 2021-09-03 오후 11 05 14" src="https://user-images.githubusercontent.com/68593821/132018480-dcc7ddc0-e019-4797-8b98-72fa97b69856.png">
 <h6>출처 : kr.freepik.com</h6>
 
+- train.csv: 총 32470개
+- test_data.csv: 총 7765개 (정답 라벨은 blind = 100으로 임의 표현)
+- 
 - 전체 사람 수 : 4500명 (train : 2700 | eval : 1800)
 - age : 20대 - 70대
 - gender : 남,여
@@ -80,7 +83,7 @@ glob2==0.7
 
 ### Data Labeling
 - mask, gender, age 기준 18개의 클래스로 분류
-<img src="https://user-images.githubusercontent.com/68593821/131881060-c6d16a84-1138-4a28-b273-418ea487548d.png" height="500"/>
+<img src="<img width="822" alt="스크린샷 2021-10-08 오후 3 22 13" src="https://user-images.githubusercontent.com/46557183/136508278-bad1fb56-23cd-4b2b-83d8-727bdebc06f3.png">" height="500"/>
 
 ### [Facenet](https://arxiv.org/pdf/1503.03832.pdf)
 ```
