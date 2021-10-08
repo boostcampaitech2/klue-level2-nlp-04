@@ -12,9 +12,11 @@ os.environ['WANDB_SILENT'] = "true"
 
 
 def train(train_df, valid_df, train_label, valid_label, args):
-    # load model and tokenizer
+    # huggingface 에 저장된 model_name 또는 저장된 model_path
     MODEL_NAME = args.model_name
+    # tokniezr load
     tokenizer = AutoTokenizer.from_pretrained('klue/roberta-large')
+    # typed_entity_marker 적용시 special_token 추가
     if args.tem:
         special_tokens_dict = {'additional_special_tokens': ['<e1>', '</e1>', '<e2>', '</e2>',
                                                              '<e3>', '</e3>', '<e4>', '</e4>']}
@@ -31,22 +33,26 @@ def train(train_df, valid_df, train_label, valid_label, args):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     print(device)
-    # setting model hyperparameter
+    # model_config load
     model_config = AutoConfig.from_pretrained(MODEL_NAME)
     model_config.num_labels = 30
 
     if args.tem:
+        # typed_entity_marker 적용시 Customized model load
         model = CustomModel(model_config, MODEL_NAME)
         model.model.resize_token_embeddings(len(tokenizer))
     else:
+        # typed_entity_marker 미적용시 huggingface AutoModelForSequenceClassification model load
         model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
     # print(model.config)
-    # model.parameters
+    # model 에 GPU 또는 CPU 에서 사용하기
     model.to(device)
 
     # 사용한 option 외에도 다양한 option들이 있습니다.
     # https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments 참고해주세요.
+    # increment_path 사용해서 동일한 이름의 폴더명일 경우 이름뒤에 2, 3, ... 식으로 번호 추가
     output_dir = increment_path(os.path.join(args.output_dir, args.run_name))
+    # training argument setting
     training_args = TrainingArguments(
         output_dir=output_dir,  # output directory
         save_total_limit=args.save_total_limit,  # number of total save model.
@@ -65,13 +71,14 @@ def train(train_df, valid_df, train_label, valid_label, args):
         load_best_model_at_end=args.load_best_model_at_end,
         report_to=args.report_to,  # 'all', 'wandb', 'tensorboard'
     )
+    # Trainer setting
     trainer = Trainer(
         model=model,  # the instantiated 🤗 Transformers model to be trained
         args=training_args,  # training arguments, defined above
         train_dataset=RE_train_dataset,  # training dataset
         eval_dataset=RE_valid_dataset,  # evaluation dataset
         compute_metrics=compute_metrics,  # define metrics function
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=args.early_stopping_patience)],
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=args.early_stopping_patience)],  # early stopping
     )
 
     # train model
@@ -79,31 +86,37 @@ def train(train_df, valid_df, train_label, valid_label, args):
     save_dir = increment_path(os.path.join('./best_model', args.model_name.split('/')[-1], args.run_name))
     model.save_pretrained(save_dir)
 
+    # 마지막 최종 best model 로 평가한 결과 저장해서 return
     eval_result = trainer.evaluate(RE_valid_dataset)
 
     return eval_result
 
 
 def main(args):
+    # seed 고정해서 실험의 재현성 확보
     seed_everything(args.seed)
 
     # 본인의 datafile 을 넣어주세요
     train_dataset = load_data("../dataset/train/train.csv", args)
 
-    # fold 별
+    # fold 별 f1_score 저장 리스트
     fold_valid_f1_list = []
+    # StratifiedKFold 사용해서 전체 데이터를 5등분
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.seed)
-    # train_idx, valid_idx 뱉어준다.
+    # train_dataset['label'] 을 기준으로 데이터를 5등분
     for fold, (train_idx, valid_idx) in enumerate(skf.split(train_dataset, train_dataset['label']), 1):
+        # cv=True 인 경우 5폴드를 모두 실행
         if not args.cv:
+            # cv=False 인 경우 1폴드까지만 실행
             if fold > 1:
                 break
         print(f'>> Cross Validation {fold} Starts!')
 
-        # load dataset
+        # load dataset setting
         train_df = train_dataset.iloc[train_idx]
         valid_df = train_dataset.iloc[valid_idx]
 
+        # train, valid label setting
         train_label = label_to_num(train_df['label'].values)
         valid_label = label_to_num(valid_df['label'].values)
 
@@ -120,10 +133,13 @@ def main(args):
                    reinit=True,
                    )
 
+        # train() 함수 실행하고 best model 에서 나온 f1_score 저장
         result = train(train_df, valid_df, train_label, valid_label, args)
         wandb.join()
+        # fold 별 f1_score 저장 리스트에 저장
         fold_valid_f1_list.append(result['eval_micro f1 score'])
 
+    # 최종 cross_validatoin 결과 출력
     print(f'cv_f1_score: {fold_valid_f1_list}')
     print(f'cv_f1_score: {np.mean(fold_valid_f1_list)}')
 

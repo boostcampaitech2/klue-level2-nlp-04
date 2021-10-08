@@ -6,6 +6,9 @@ from loss import LabelSmoothingLoss
 
 
 class FCLayer(nn.Module):
+    """
+    모델에 additional layer 로 추가해 줄 Dense layer Class
+    """
     def __init__(self, input_dim, output_dim, dropout_rate=0.3, use_activation=True):
         super(FCLayer, self).__init__()
         self.use_activation = use_activation
@@ -21,6 +24,9 @@ class FCLayer(nn.Module):
 
 
 class CustomModel(BertPreTrainedModel):
+    """
+    기존 transformers 에서 제공되는 모델에 추가적인 layer 가 붙은 모델
+    """
     def __init__(self, config, model_name):
         super().__init__(config)
 
@@ -80,7 +86,9 @@ class CustomModel(BertPreTrainedModel):
                 loss_fct = nn.MSELoss()
                 loss = loss_fct(logits.view(-1), labels.view(-1))
             else:
+                # CrossEntropy 적용
                 # loss_fct = nn.CrossEntropyLoss()
+                # label smoothing 적용
                 loss_fct = LabelSmoothingLoss(smoothing=0.1)
                 loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
 
