@@ -8,18 +8,12 @@
 ### Dependencies
 ```python
 torch==1.7.1
-torchvision==0.8.2
-tensorboard==2.6.0
+transformers==4.10.0
 pandas==1.1.5
-opencv-python==4.5.1.48
-scikit-learn==0.24.2
+scikit-learn==0.24.1
 matplotlib==3.3.4
-timm==0.4.12
 tqdm==4.51.0
 numpy==1.19.2
-python-dotenv==0.19.0
-Pillow==8.1.0
-h5py==3.1.0
 glob2==0.7
 ```
 
@@ -27,57 +21,58 @@ glob2==0.7
 - `pip install -r requirements.txt`
 
 ### Contents
-- `dataset.py`
-- `face_image.py` : FaceNet 적용
+- `hyperparameter_search.py`
+- `inference.py`
+- `load_data.py` 
 - `loss.py` 
 - `model.py` 
-- `optimizer.py` 
+- `new_mlm.py` : MLM 적용
 - `train.py`
-- `inference.py`
-- `evaluation.py`
-- `perfect_train.csv` : dataset
+- `utils.py`
+- `train_v1.csv` : 40% of no_relation data
 
 ### Training
-- `SM_CHANNEL_TRAIN=[train image dir] SM_MODEL_DIR=[model saving dir] python train.py`
+- `SM_CHANNEL_TRAIN=[train csv data dir] SM_MODEL_DIR=[model saving dir] python train.py`
 
 ### Inference
-- `SM_CHANNEL_EVAL=[eval image dir] SM_CHANNEL_MODEL=[model saved dir] SM_OUTPUT_DATA_DIR=[inference output dir] python inference.py`
+- `SM_CHANNEL_EVAL=[test csv dir] SM_CHANNEL_MODEL=[model saved dir] SM_OUTPUT_DATA_DIR=[inference output dir] python inference.py`
 
-### Evaluation
-- `SM_GROUND_TRUTH_DIR=[GT dir] SM_OUTPUT_DATA_DIR=[inference output dir] python evaluation.py`
 
 ## :mag: Overview
 ### Background
-> 관계 추출(Relation Extraction)이란 문장의 단어(Entity)에 대한 속성과 관계를 예측하는 문제입니다.<br>
-> 문장 속에서 단어간에 관계성을 파악하는 관계 추출(Relation Extraction)은 지식 그래프 구축을 위한 핵심 구성 요소로, 구조화된 검색, 감정 분석, 질문 답변하기, 요약과 같은 자연어처리 응용 프로그램에서 중요합니다. 비구조적인 자연어 문장에서 구조적인 triple을 추출해 정보를 요약하고, 중요한 성분을 핵심적으로 파악할 수 있습니다. 
-
+> COVID-19의 확산으로 우리나라는 물론 전 세계 사람들은 경제적, 생산적인 활동에 많은 제약을 받고있습니다. </br>
+> 확산을 막기위해 많은 노력들을 하고 있지만 COVID-19의 강한 전염력 때문에 우리를 오랫동안 괴롭히고 있습니다. </br>
+> 이를 해결하는 방법은 모든 사람이 마스크로 코와 입을 가려서 혹시 모를 감염자로부터의 전파 경로를 원천 차단하는 것입니다. </br>
+> 이를 위해 우리는 공공장소에서 모든 사람들의 올바른 마스크 착용 상태를 검사하는 시스템이 필요합니다. </br>
+> 즉, **카메라로 비춰진 사람 얼굴 이미지만으로 이 사람이 마스크를 쓰고 있는지, 쓰지 않았는지, </br>
+> 정확히 쓴 것이 맞는지 자동으로 가려낼 수 있는 시스템이 필요합니다.**
 
 ### Problem definition
-> 주어진 문장과 문장의 단어(subject entity, object entity)를 이용하여, <br>
-> subject entity와 object entity가 어떤 관계가 있는지 예측하는 시스템 or 모델 구축하기
+> 카메라로 비춰진 사람 얼굴 이미지만으로 이 사람이 마스크를 쓰고 있는지, </br>
+> 쓰지 않았는지, 정확히 쓴 것이 맞는지 자동으로 가려낼 수 있는 시스템 or 모델
 
 ### Development environment
 - GPU V100 원격 서버
 - PyCharm 또는 Visual Studio Code | Python 3.7(or over)
 
 ### Evaluation
-![image](https://user-images.githubusercontent.com/22788924/136509413-3597fc20-6d08-4575-9927-745adc32bf65.png)
+<img src="https://www.googleapis.com/download/storage/v1/b/kaggle-user-content/o/inbox%2F6390139%2Fb19f3db709b41788c3b1333ef1ae11a9%2Ff1score.png?generation=1608093256720406&alt=media">
 
 ## :mask: Dataset Preparation
 ### Prepare Images
-<img width="833" alt="스크린샷 2021-10-08 오후 3 27 35" src="https://user-images.githubusercontent.com/46557183/136508822-bc5a076c-b36a-4915-b6b5-693cae21938e.png">
+<img width="1103" alt="스크린샷 2021-09-03 오후 11 05 14" src="https://user-images.githubusercontent.com/68593821/132018480-dcc7ddc0-e019-4797-8b98-72fa97b69856.png">
+<h6>출처 : kr.freepik.com</h6>
 
-- train.csv: 총 32470개
-- test_data.csv: 총 7765개 (정답 라벨은 blind = 100으로 임의 표현)
-- Input: 문장과 두 Entity의 위치(start_idx, end_idx)
-- Target: 카테고리 30개 중 1개
-
-<img width="955" alt="스크린샷 2021-10-08 오후 3 29 58" src="https://user-images.githubusercontent.com/46557183/136508992-7a8ff2bf-a5d9-4334-9cab-696a9c08f645.png">
-
+- 전체 사람 수 : 4500명 (train : 2700 | eval : 1800)
+- age : 20대 - 70대
+- gender : 남,여
+- mask : 개인별 정상 착용 5장, 비정상적 착용 1장(코스크,턱스크...), 미착용 1장
+- 전체 31,500 Images (train : 18,900 | eval : 12,600)
+- 이미지 크기 : (384,512)
 
 ### Data Labeling
-- 크게 no-relation, org, per기준 30개의 클래스로 분류
-<img src="https://user-images.githubusercontent.com/46557183/136508278-bad1fb56-23cd-4b2b-83d8-727bdebc06f3.png" height="500"/>
+- mask, gender, age 기준 18개의 클래스로 분류
+<img src="https://user-images.githubusercontent.com/68593821/131881060-c6d16a84-1138-4a28-b273-418ea487548d.png" height="500"/>
 
 ### [Facenet](https://arxiv.org/pdf/1503.03832.pdf)
 ```
