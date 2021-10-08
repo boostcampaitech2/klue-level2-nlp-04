@@ -71,17 +71,6 @@ glob2==0.7
 - 크게 no-relation, org, per기준 30개의 클래스로 분류
 <img src="https://user-images.githubusercontent.com/46557183/136508278-bad1fb56-23cd-4b2b-83d8-727bdebc06f3.png" height="500"/>
 
-### [Facenet](https://arxiv.org/pdf/1503.03832.pdf)
-```
-$ python face_image.py
-```
- - [face_image.py](https://github.com/boostcampaitech2/image-classification-level1-06/blob/main/face_image.py)
-  - FaceNet 이용 얼굴 인식 후 FaceCrop
-  - FaceCrop 후 Resize를 거친 이미지 크기 : (280, 210)
-
-### Generate CSV files
-- `train.csv`
-
 ## :running: Training
 
 ### Train Models
