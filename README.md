@@ -73,6 +73,11 @@ glob2==0.7
 
 ## :running: Training
 
+```
+# 단일 모델 train 시
+$ python new_mlm_train.py 
+```
+
 ### Train Models
 - [RoBERTa](https://arxiv.org/pdf/1907.11692.pdf)
   - klue/roberta-small(https://huggingface.co/klue/roberta-small)
