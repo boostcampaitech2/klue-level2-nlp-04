@@ -68,22 +68,19 @@ glob2==0.7
 
 ## :mask: Dataset Preparation
 ### Prepare Images
-<img width="1103" alt="스크린샷 2021-09-03 오후 11 05 14" src="https://user-images.githubusercontent.com/68593821/132018480-dcc7ddc0-e019-4797-8b98-72fa97b69856.png">
-<h6>출처 : kr.freepik.com</h6>
+<img width="833" alt="스크린샷 2021-10-08 오후 3 27 35" src="https://user-images.githubusercontent.com/46557183/136508822-bc5a076c-b36a-4915-b6b5-693cae21938e.png">
 
 - train.csv: 총 32470개
 - test_data.csv: 총 7765개 (정답 라벨은 blind = 100으로 임의 표현)
-- 
-- 전체 사람 수 : 4500명 (train : 2700 | eval : 1800)
-- age : 20대 - 70대
-- gender : 남,여
-- mask : 개인별 정상 착용 5장, 비정상적 착용 1장(코스크,턱스크...), 미착용 1장
-- 전체 31,500 Images (train : 18,900 | eval : 12,600)
-- 이미지 크기 : (384,512)
+- Input: 문장과 두 Entity의 위치(start_idx, end_idx)
+- Target: 카테고리 30개 중 1개
+
+<img width="955" alt="스크린샷 2021-10-08 오후 3 29 58" src="https://user-images.githubusercontent.com/46557183/136508992-7a8ff2bf-a5d9-4334-9cab-696a9c08f645.png">
+
 
 ### Data Labeling
-- mask, gender, age 기준 18개의 클래스로 분류
-<img src="<img width="822" alt="스크린샷 2021-10-08 오후 3 22 13" src="https://user-images.githubusercontent.com/46557183/136508278-bad1fb56-23cd-4b2b-83d8-727bdebc06f3.png">" height="500"/>
+- 크게 no-relation, org, per기준 30개의 클래스로 분류
+<img src="https://user-images.githubusercontent.com/46557183/136508278-bad1fb56-23cd-4b2b-83d8-727bdebc06f3.png" height="500"/>
 
 ### [Facenet](https://arxiv.org/pdf/1503.03832.pdf)
 ```
