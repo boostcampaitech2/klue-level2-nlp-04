@@ -75,7 +75,7 @@ glob2==0.7
 
 ```
 # 단일 모델 train 시
-$ python new_mlm_train.py 
+$ python new_mlm.py 
 ```
 
 ### Train Models
