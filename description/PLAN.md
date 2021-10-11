@@ -10,12 +10,10 @@
 ||Loss Function Experiment||
 ||Entity Special Token|[오피스아워 정리 2번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770)||
 ||K-Fold Validation Training||
-
-|5|[DATA Augmentation : Pororo](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#5-data-augmentation--pororo-) |https://github.com/kakaobrain/pororo||
+||[DATA Augmentation : Pororo](https://github.com/boostcampaitech2/klue-level2-nlp-04/blob/JSM/description/PLAN.md#5-data-augmentation--pororo-) |https://github.com/kakaobrain/pororo||
 ||Hyperparameter Tuning|https://medium.com/distributed-computing-with-ray/hyperparameter-optimization-for-transformers-a-guide-c4e32c6c989b|
 ||DATA Augmentation : KoBart|[KoBart](https://github.com/SKT-AI/KoBART)||
 ||DATA Augmentation : KoGPT2|[KoGPT2](https://github.com/gyunggyung/KoGPT2-FineTuning)||
-
 ||Additional Pretraining on dataset by MASK token|https://dacon.io/competitions/official/235747/codeshare/3072||
 ||Fine-tuning like Pre-tranining|[오피스아워 정리 6번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770) / [HuggingFace-Bert](https://github.com/huggingface/transformers/blob/master/src/transformers/models/bert/modeling_bert.py)||
 ||Making Classifier Deeper||
