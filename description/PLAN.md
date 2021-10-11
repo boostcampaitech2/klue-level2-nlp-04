@@ -18,9 +18,7 @@
 ||Fine-tuning like Pre-tranining|[오피스아워 정리 6번](https://github.com/sangmandu/SangSangPlus/issues/101#issue-1011979770) / [HuggingFace-Bert](https://github.com/huggingface/transformers/blob/master/src/transformers/models/bert/modeling_bert.py)||
 ||Making Classifier Deeper||
 ||Mutli Label Classification||
-
 ||Hyperparameter Experiment|epoch, lr, batch_size, warmup_steps,||
-
 |||||
 
 다음과 같은 요소를 반드시 포함하여 비교할 것
